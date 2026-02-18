@@ -244,6 +244,8 @@ canvas{
 
 <body>
 
+<!-- HTML START -->
+
 <h1>Edit Character</h1>
 
 <img id="avatarPreview" class="avatarPreview">
@@ -287,7 +289,6 @@ color:#9aa3b2;
 </button>
 
 
-
 <h2 style="margin-top:20px;">Lore Metadata</h2>
 
 <input id="charSpecies" placeholder="Species">
@@ -302,6 +303,17 @@ color:#9aa3b2;
     <option>Anti-Hero</option>
     <option>Anti-Villain</option>
 </select>
+
+
+<div class="form-section">
+    <h3>Abilities</h3>
+
+    <div id="abilityList"></div>
+
+    <button type="button" id="addAbilityBtn">+ Add Ability</button>
+</div>
+
+
 
 <h2 style="margin-top:20px;">Relationships</h2>
 
@@ -319,10 +331,20 @@ color:#9aa3b2;
 
 
 
+
+
+
+<!-- HTML END -->
+
+
+
+
 <!-- JAVA SCRIPT -->
 
 
 <script>
+    
+    
 /* ===== LOAD CHARACTER ===== */
 let characters = JSON.parse(localStorage.getItem("characters")) || [];
 let editingId = localStorage.getItem("editingCharacterId");
@@ -368,7 +390,7 @@ const addCustomFieldBtn = document.getElementById("addCustomFieldBtn");
 
 let relationships = char?.relationships || [];
 let customFields = char?.customFields || [];
-
+let abilities = char?.abilities || [];
 
 
 
@@ -558,8 +580,6 @@ updateAutoStats();
 /* ===== SAVE ===== */
 saveBtn.onclick = () => {
 
-saveBtn.onclick = () => {
-
     const auto = updateAutoStats();
 
     if(char){
@@ -585,6 +605,7 @@ saveBtn.onclick = () => {
                     alignment: alignmentInput.value,
                     relationships: relationships,
                     customFields: customFields,
+                    abilities: abilities,
 
                     updatedAt: new Date().toISOString()
                 }
@@ -612,6 +633,7 @@ saveBtn.onclick = () => {
             alignment: alignmentInput.value,
             relationships: relationships,
             customFields: customFields,
+            abilities: abilities,
 
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
@@ -621,6 +643,7 @@ saveBtn.onclick = () => {
     localStorage.setItem("characters", JSON.stringify(characters));
     window.location.href = "character.html";
 };
+
 
 
 /* ALIGNMENT */
@@ -933,6 +956,101 @@ function bindCustomFieldEvents(){
 renderCustomFields();
 
 }
+
+
+/* ================== ABILITY RENDERER =============*/
+
+const abilityList = document.getElementById("abilityList");
+const addAbilityBtn = document.getElementById("addAbilityBtn");
+
+function renderAbilities(){
+
+    abilityList.innerHTML = "";
+
+    abilities.forEach(ability => {
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "ability-card";
+
+        wrapper.innerHTML = `
+            <input placeholder="Name"
+                   value="${ability.name || ""}"
+                   data-id="${ability.id}"
+                   class="ability-name">
+
+            <input placeholder="Type"
+                   value="${ability.type || ""}"
+                   data-id="${ability.id}"
+                   class="ability-type">
+
+            <input type="number"
+                   placeholder="Power"
+                   value="${ability.power || 0}"
+                   data-id="${ability.id}"
+                   class="ability-power">
+
+            <textarea placeholder="Description"
+                      data-id="${ability.id}"
+                      class="ability-desc">${ability.description || ""}</textarea>
+
+            <button data-id="${ability.id}" class="deleteAbility">Delete</button>
+        `;
+
+        abilityList.appendChild(wrapper);
+    });
+}
+
+addAbilityBtn.addEventListener("click", ()=>{
+
+    abilities.push({
+        id: crypto.randomUUID(),
+        name: "",
+        type: "",
+        power: 0,
+        description: ""
+    });
+
+    renderAbilities();
+});
+
+
+/*========Ability Deletion========*/
+
+abilityList.addEventListener("click", (e)=>{
+
+    if(e.target.classList.contains("deleteAbility")){
+        const id = e.target.dataset.id;
+
+        abilities = abilities.filter(a => a.id !== id);
+
+        renderAbilities();
+    }
+});
+
+/*==============SYNC INPUT============<li></li>=====*/
+
+abilityList.addEventListener("input", (e)=>{
+
+    const id = e.target.dataset.id;
+    const ability = abilities.find(a => a.id === id);
+    if(!ability) return;
+
+    if(e.target.classList.contains("ability-name")){
+        ability.name = e.target.value;
+    }
+
+    if(e.target.classList.contains("ability-type")){
+        ability.type = e.target.value;
+    }
+
+    if(e.target.classList.contains("ability-power")){
+        ability.power = parseInt(e.target.value) || 0;
+    }
+
+    if(e.target.classList.contains("ability-desc")){
+        ability.description = e.target.value;
+    }
+});
 
 </script>
 </body>
