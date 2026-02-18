@@ -77,16 +77,23 @@ header{
     border-radius:var(--radius);
     margin-bottom:14px;
     border:1px solid #2a2f3d;
+    transition:transform .15s ease, border-color .15s ease;
 }
 
 .card-title{
     font-weight:600;
+    font-size:17px;
 }
 
 .card-tags{
     font-size:12px;
     color:var(--text-muted);
     margin-top:6px;
+}
+
+.card:hover{
+    transform:translateY(-2px);
+    border-color:var(--accent);
 }
 
 
@@ -175,6 +182,8 @@ header{
 }
 
 
+
+
 </style>
 </head>
 
@@ -244,18 +253,22 @@ characters.forEach((char, index) => {
     const card = document.createElement("div");
     card.className = "card";
 
-    card.innerHTML = `
+   card.innerHTML = `
+<div class="card-content">
 
     ${char.image 
         ? `<img src="${char.image}" class="avatar">`
         : `<div class="avatar"></div>`
     }
 
-    <div class="card-title">${char.name}</div>
-    <div>${char.desc || ""}</div>
-    <div class="card-tags">${char.tags || ""}</div>
-`;
+    <div class="card-text">
+        <div class="card-title">${char.name || "Unnamed Character"}</div>
+        <div class="card-desc">${char.desc || ""}</div>
+        <div class="card-tags">${char.tags || ""}</div>
+    </div>
 
+</div>
+`;
 
     // CLICK CARD
     card.addEventListener("click", () => {
