@@ -24,10 +24,7 @@ body{
 
 /* MAIN WRAPPER */
 .viewer{
-    max-width:780px;
-    margin:auto;
-
-    background:rgba(26,29,38,0.75);
+    background: var(--viewer-bg, rgba(26,29,38,0.75));
     backdrop-filter: blur(18px);
 
     border-radius:28px;
@@ -38,7 +35,11 @@ body{
     box-shadow:
         0 40px 80px rgba(0,0,0,.45),
         inset 0 0 0 1px rgba(255,255,255,0.02);
+
+    position:relative;
+    overflow:hidden;
 }
+
 
 /* HEADER */
 .hero{
@@ -135,10 +136,136 @@ body{
 }
 
 
+/* ================= GRADIENT ==============*/
+
+.bgPanel{
+    max-width:780px;
+    margin:auto;
+    margin-bottom:20px;
+    padding:20px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.06);
+}
+
+.bgRow{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.bgRow input[type="text"]{
+    flex:1;
+}
+
+
+/* ================ BACKGROUND EFFECTS ============== */
+
+.viewer{
+    position:relative;
+    overflow:hidden;
+}
+
+.viewer::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:0;
+    transition:.3s;
+}
+
+/* NOISE */
+.viewer.noise::before{
+    opacity:.08;
+    background-image:url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+/* GLOW */
+.viewer.glow::after{
+    content:"";
+    position:absolute;
+    inset:-40%;
+    background:radial-gradient(circle at center,
+        rgba(255,255,255,.15),
+        transparent 60%);
+    pointer-events:none;
+}
+
+/* PARTICLES */
+.viewer.particles::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,.08) 1px, transparent 1px);
+    background-size:60px 60px;
+    animation:particleMove 40s linear infinite;
+    pointer-events:none;
+}
+
+@keyframes particleMove{
+    from{ background-position:0 0; }
+    to{ background-position:600px 600px; }
+}
+
+
+
+
 </style>
 </head>
 
 <body>
+    
+    <!-- BODY -->
+    
+    
+<div style="max-width:780px;margin:auto;margin-bottom:20px;">
+
+    <label>Background Color</label>
+
+    <div style="display:flex; gap:10px; margin-top:6px;">
+        <input type="color" id="bgColorPicker" value="#1a1d26">
+
+        <input type="text"
+               id="bgHexInput"
+               placeholder="#1a1d26"
+               style="flex:1;">
+    </div>
+
+</div>
+
+<div class="bgPanel">
+
+    <h3>Background Builder</h3>
+
+    <div class="bgRow">
+        <label>Color A</label>
+        <input type="color" id="gradA" value="#1a1d26">
+        <input type="text" id="gradAHex" placeholder="#1a1d26">
+    </div>
+
+    <div class="bgRow">
+        <label>Color B</label>
+        <input type="color" id="gradB" value="#5aa2ff">
+        <input type="text" id="gradBHex" placeholder="#5aa2ff">
+    </div>
+
+    <div class="bgRow">
+        <label>Angle</label>
+        <input type="range" id="gradAngle" min="0" max="360" value="135">
+        <span id="angleLabel">135°</span>
+    </div>
+
+    <h3>Effects</h3>
+
+    <label><input type="checkbox" id="noiseToggle"> Noise Texture</label>
+    <label><input type="checkbox" id="glowToggle"> Glow Vignette</label>
+    <label><input type="checkbox" id="particleToggle"> Particle Shimmer</label>
+
+</div>
+
 
 <div class="viewer" id="viewerCard">
 
@@ -177,6 +304,9 @@ body{
 Download Character PNG
 </button>
 
+
+<!-- JAVASCRIPT -->
+
 <script>
 const chars = JSON.parse(localStorage.getItem("characters")) || [];
 const index = localStorage.getItem("viewingCharacterIndex");
@@ -214,13 +344,190 @@ vRelationships.innerHTML = (char.relationships || [])
 
 /* DOWNLOAD PNG */
 downloadBtn.onclick = () => {
-    html2canvas(document.getElementById("viewerCard")).then(canvas=>{
+
+    html2canvas(document.getElementById("viewerCard"), {
+        backgroundColor: null,
+        useCORS: true
+    }).then(canvas=>{
         const link = document.createElement("a");
         link.download = (char.name || "character") + ".png";
-        link.href = canvas.toDataURL();
+        link.href = canvas.toDataURL("image/png");
         link.click();
     });
+
 };
+
+
+/* ================ COLOR DETECTORS =================*/
+
+const picker = document.getElementById("bgColorPicker");
+const hexInput = document.getElementById("bgHexInput");
+const viewer = document.getElementById("viewerCard");
+
+/* HEX → RGB */
+function hexToRgb(hex){
+
+    hex = hex.replace("#","");
+
+    if(hex.length === 3){
+        hex = hex.split("").map(c => c+c).join("");
+    }
+
+    const num = parseInt(hex, 16);
+
+    return {
+        r:(num >> 16) & 255,
+        g:(num >> 8) & 255,
+        b:num & 255
+    };
+}
+
+/* BRIGHTNESS DETECTOR */
+function getBrightness({r,g,b}){
+    return (r*299 + g*587 + b*114) / 1000;
+}
+
+/* APPLY BACKGROUND + AUTO TEXT */
+function applyBackground(hex){
+
+    if(!hex.startsWith("#")) hex = "#"+hex;
+
+    viewer.style.setProperty("--viewer-bg", hex);
+
+    const rgb = hexToRgb(hex);
+    const brightness = getBrightness(rgb);
+
+    if(brightness > 150){
+        viewer.style.color = "#111";
+    }else{
+        viewer.style.color = "#fff";
+    }
+}
+
+
+/* PICKER → HEX */
+picker.addEventListener("input", ()=>{
+    hexInput.value = picker.value;
+    applyBackground(picker.value);
+});
+
+/* HEX → PICKER */
+hexInput.addEventListener("input", ()=>{
+
+    let val = hexInput.value.trim();
+
+    if(!val.startsWith("#")) val = "#"+val;
+
+    if(/^#[0-9A-F]{6}$/i.test(val)){
+        picker.value = val;
+        applyBackground(val);
+    }
+});
+
+
+/* ======================= GRADIENT ENGINE ====================== */
+
+const gradA = document.getElementById("gradA");
+const gradB = document.getElementById("gradB");
+const gradAHex = document.getElementById("gradAHex");
+const gradBHex = document.getElementById("gradBHex");
+const gradAngle = document.getElementById("gradAngle");
+const angleLabel = document.getElementById("angleLabel");
+
+function applyGradient(){
+
+    const a = gradA.value;
+    const b = gradB.value;
+    const angle = gradAngle.value;
+
+    viewer.style.setProperty(
+        "--viewer-bg",
+        `linear-gradient(${angle}deg, ${a}, ${b})`
+    );
+
+    autoTextFromGradient(a, b);
+}
+
+gradA.oninput = ()=> {
+    gradAHex.value = gradA.value;
+    applyGradient();
+};
+
+gradB.oninput = ()=> {
+    gradBHex.value = gradB.value;
+    applyGradient();
+};
+
+gradAngle.oninput = ()=>{
+    angleLabel.textContent = gradAngle.value + "°";
+    applyGradient();
+};
+
+
+/* TEXT DETECTION */
+
+function autoTextFromGradient(hexA, hexB){
+
+    const rgbA = hexToRgb(hexA);
+    const rgbB = hexToRgb(hexB);
+
+    const avg = {
+        r:(rgbA.r + rgbB.r)/2,
+        g:(rgbA.g + rgbB.g)/2,
+        b:(rgbA.b + rgbB.b)/2
+    };
+
+    const brightness = getBrightness(avg);
+
+    viewer.style.color = brightness > 150 ? "#111" : "#fff";
+}
+
+gradAHex.addEventListener("input", ()=>{
+    let val = gradAHex.value.trim();
+    if(!val.startsWith("#")) val = "#"+val;
+
+    if(/^#[0-9A-F]{6}$/i.test(val)){
+        gradA.value = val;
+        applyGradient();
+    }
+});
+
+gradBHex.addEventListener("input", ()=>{
+    let val = gradBHex.value.trim();
+    if(!val.startsWith("#")) val = "#"+val;
+
+    if(/^#[0-9A-F]{6}$/i.test(val)){
+        gradB.value = val;
+        applyGradient();
+gradAHex.value = gradA.value;
+gradBHex.value = gradB.value;
+
+    }
+});
+
+
+
+/* ============== EFFECT TOGGLE =============== */
+
+const noiseToggle = document.getElementById("noiseToggle");
+const glowToggle = document.getElementById("glowToggle");
+const particleToggle = document.getElementById("particleToggle");
+
+noiseToggle.onchange = ()=>{
+    viewer.classList.toggle("noise", noiseToggle.checked);
+};
+
+glowToggle.onchange = ()=>{
+    viewer.classList.toggle("glow", glowToggle.checked);
+};
+
+particleToggle.onchange = ()=>{
+    viewer.classList.toggle("particles", particleToggle.checked);
+};
+
+
+
+
 </script>
 
 </body>
