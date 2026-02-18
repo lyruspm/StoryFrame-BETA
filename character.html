@@ -3,229 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Characters - World Builder</title>
+<title>Character Manager</title>
 
 <style>
+/* =========================
+   THEME TOKENS
+========================= */
 :root{
     --bg-main:#0f1117;
     --bg-card:#1a1d26;
     --bg-accent:#232734;
-    --text-main:#e6e9ef;
-    --text-muted:#9aa3b2;
+
     --accent:#5aa2ff;
+    --danger:#ff5a7a;
+
     --radius:14px;
+
+    --space-xs:6px;
+    --space-sm:10px;
+    --space-md:16px;
+    --space-lg:24px;
+
+    --transition:0.18s ease;
 }
 
+/* =========================
+   BASE
+========================= */
 *{
     box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:system-ui, sans-serif;
 }
 
 body{
     background:var(--bg-main);
-    color:var(--text-main);
-    padding-bottom:80px;
-}
-
-/* HEADER */
-header{
-    padding:18px;
-    background:var(--bg-card);
-    position:sticky;
-    top:0;
-    border-bottom:1px solid #2a2f3d;
-}
-
-#searchInput{
-    margin-top:12px;
-    width:100%;
-    padding:12px;
-    border-radius:var(--radius);
-    border:none;
-    background:var(--bg-accent);
     color:white;
-    font-size:14px;
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    padding:var(--space-lg);
+    line-height:1.4;
 }
 
-#searchInput::placeholder{
-    color:var(--text-muted);
-}
-
-/* FOLDER BAR */
-.folder-bar{
-    display:flex;
-    gap:10px;
-    overflow-x:auto;
-    padding:14px;
-}
-
-.folder{
-    background:var(--bg-accent);
-    padding:10px 16px;
-    border-radius:999px;
-    font-size:14px;
-}
-
-/* CARDS */
-.section{
-    padding:16px;
-}
-
+/* =========================
+   CARD LAYOUT (Optional)
+========================= */
 .card{
     background:var(--bg-card);
-    padding:16px;
     border-radius:var(--radius);
-    margin-bottom:14px;
-    border:1px solid #2a2f3d;
-    transition:transform .15s ease, border-color .15s ease;
+    padding:var(--space-lg);
 }
 
-.card-title{
-    font-weight:600;
-    font-size:17px;
-}
-
-.card-tags{
-    font-size:12px;
-    color:var(--text-muted);
-    margin-top:6px;
-}
-
-.card:hover{
-    transform:translateY(-2px);
-    border-color:var(--accent);
-}
-
-
-/* BOTTOM NAV */
-.bottom-nav{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    height:65px;
+/* =========================
+   INPUTS / TEXTAREAS / SELECT
+========================= */
+input,
+textarea,
+select{
+    width:100%;
+    padding:14px;
+    margin-bottom:var(--space-md);
+    border-radius:var(--radius);
+    border:none;
     background:var(--bg-card);
-    border-top:1px solid #2a2f3d;
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-}
-
-.nav-btn{
-    font-size:12px;
-    color:var(--text-muted);
-    text-decoration:none;
-}
-
-.nav-btn.active{
-    color:var(--accent);
-}
-
-
-/* FLOATING ACTION BUTTON */
-.fab{
-    position:fixed;
-    bottom:90px;
-    right:20px;
-
-    width:60px;
-    height:60px;
-    border-radius:50%;
-
-    background:var(--accent);
     color:white;
+    font-size:14px;
 
-    font-size:32px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    text-decoration:none;
-
-    box-shadow:0 6px 20px rgba(0,0,0,0.4);
-    transition:transform 0.3s ease;
+    transition:var(--transition);
+    outline:none;
 }
 
-/* ROTATE EFFECT WHEN PRESSED */
-.fab:active{
-    transform:rotate(90deg) scale(0.95);
+/* Focus glow */
+input:focus,
+textarea:focus,
+select:focus{
+    background:var(--bg-accent);
+    box-shadow:0 0 0 2px var(--accent);
 }
 
-/* AVATAR CSS */
-.avatar{
-    width:70px;
-    height:70px;
+/* Textarea usability */
+textarea{
+    resize:vertical;
+    min-height:120px;
+}
+
+/* Select reset */
+select{
+    appearance:none;
+    cursor:pointer;
+}
+
+/* =========================
+   BUTTON SYSTEM
+========================= */
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:var(--radius);
+    margin-bottom:12px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+
+    transition:var(--transition);
+}
+
+/* Variants */
+.btn-primary{
+    background:var(--accent);
+}
+
+.btn-danger{
+    background:var(--danger);
+}
+
+/* Hover / Active */
+button:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.05);
+}
+
+button:active{
+    transform:translateY(0);
+    filter:brightness(.95);
+}
+
+/* =========================
+   AVATAR PREVIEW
+========================= */
+.avatarPreview{
+    width:140px;
+    height:140px;
     border-radius:50%;
     object-fit:cover;
     background:var(--bg-accent);
-    margin-bottom:10px;
     display:block;
+    margin:0 auto var(--space-md) auto;
 }
 
-/* TEXT WRAPPER */
+/* =========================
+   CANVAS EDITOR
+========================= */
+#editorContainer{
+    display:none;
+    margin-bottom:var(--space-lg);
+}
 
-.card-content{
+canvas{
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    display:block;
+    margin:0 auto var(--space-sm) auto;
+    background:#000;
+}
+
+#zoomSlider{
+    width:100%;
+    margin-bottom:var(--space-sm);
+}
+
+/* =========================
+   UTILITY HELPERS
+========================= */
+.center{
     display:flex;
-    gap:16px;
-    align-items:flex-start;
+    justify-content:center;
+    align-items:center;
 }
 
-.card-text{
-    flex:1;
+.stack > * + *{
+    margin-top:var(--space-md);
 }
 
-.card-desc{
-    color:var(--text-muted);
-    margin-top:4px;
-    line-height:1.4;
-    font-size:14px;
+.hidden{
+    display:none !important;
 }
 
-/* FOLDER */
+/* =========================
+   MOBILE TWEAKS
+========================= */
+@media (max-width:480px){
+    body{
+        padding:var(--space-md);
+    }
 
-.folder{
-    background:var(--bg-accent);
-    padding:10px 16px;
-    border-radius:999px;
-    font-size:14px;
-    cursor:pointer;
-    white-space:nowrap;
-    transition:.15s;
+    canvas{
+        width:220px;
+        height:220px;
+    }
+
+    .avatarPreview{
+        width:120px;
+        height:120px;
+    }
 }
 
-.folder.active{
-    background:var(--accent);
-    color:white;
-}
-#addFolderBtn:hover{
-    color:white;
-    background:var(--accent);
-}
-
-/* ========== BUTTON STYLING ============= */
-
-.editBtn, .viewBtn{
+/* Base button */
+.btn{
+    width:100%;
+    padding:16px;
     border:none;
-    background:var(--bg-accent);
-    color:var(--text-muted);
-    border-radius:8px;
-    width:36px;
-    height:36px;
-    cursor:pointer;
+    border-radius:var(--radius);
     font-size:16px;
-    transition:.15s;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.18s ease;
 }
 
-.editBtn:hover{
+/* SAVE */
+.saveBtn{
     background:var(--accent);
     color:white;
 }
 
-.viewBtn:hover{
-    background:var(--accent);
+.saveBtn:hover{
+    filter:brightness(1.1);
+}
+
+.saveBtn:active{
+    filter:brightness(.9);
+}
+
+
+/* DELETE */
+.deleteBtn{
+    background:var(--danger);
     color:white;
+}
+
+.deleteBtn:hover{
+    filter:brightness(1.1);
+}
+
+.deleteBtn:active{
+    filter:brightness(.9);
 }
 
 
@@ -233,303 +243,536 @@ header{
 </head>
 
 <body>
-   
 
-<header>
-    
-<!-- MAIN BODY -->
-    
-    <h1>Characters</h1>
+<!-- HTML START -->
 
-<input id="searchInput" type="text" placeholder="Search Characters or #Tags">
+<h1>Edit Character</h1>
+
+<img id="avatarPreview" class="avatarPreview">
+
+<input type="file" id="charImage" accept="image/*">
+
+<div id="editorContainer">
+    <canvas id="imageCanvas" width="300" height="300"></canvas>
+    <input type="range" id="zoomSlider" min="0.5" max="3" step="0.01" value="1">
+    <button type="button" id="useImageBtn">Use Image</button>
+</div>
+
+<input id="charName" placeholder="Name">
+<textarea id="charDesc" placeholder="Description"></textarea>
+<input id="charTags" placeholder="Tags">
+<input id="charFolder" placeholder="Folder">
+
+<h2 style="margin-top:20px;">Life Timeline</h2>
+
+<input type="date" id="charBirthDate" placeholder="Birth Date">
+<input type="date" id="charDeathDate" placeholder="Death Date">
 
 
-</header>
-
-<div class="folder-bar" id="folderBar"></div>
-
-<div style="padding:0 14px 10px 14px;">
-    <button id="addFolderBtn" style="
-        width:100%;
-        padding:10px;
-        border-radius:999px;
-        border:none;
-        background:var(--bg-accent);
-        color:var(--text-muted);
-        cursor:pointer;
-    ">
-        + Add Folder
-    </button>
+<div id="autoStats" style="
+background:var(--bg-card);
+padding:14px;
+border-radius:var(--radius);
+margin-bottom:16px;
+font-size:14px;
+color:#9aa3b2;
+">
 </div>
 
 
-<section class="section">
+<h2 style="margin-top:20px;">Custom Fields</h2>
+
+<div id="customFieldsList"></div>
+
+<button type="button" id="addCustomFieldBtn">
++ Add Custom Field
+</button>
+
+
+<h2 style="margin-top:20px;">Lore Metadata</h2>
+
+<input id="charSpecies" placeholder="Species">
+<input id="charFaction" placeholder="Faction">
+<input id="charOrigin" placeholder="Origin World / Location">
+
+<select id="charAlignment">
+    <option value="">Alignment</option>
+    <option>Hero</option>
+    <option>Neutral</option>
+    <option>Villain</option>
+    <option>Anti-Hero</option>
+    <option>Anti-Villain</option>
+</select>
+
+
+<div class="form-section">
+    <h3>Abilities</h3>
+
+    <div id="abilityList"></div>
+
+    <button type="button" id="addAbilityBtn">+ Add Ability</button>
+</div>
 
 
 
-<!-- ===== CHARACTER LIST ===== -->
-<section class="section">
-    <h2>Character List</h2>
+<h2 style="margin-top:20px;">Relationships</h2>
 
-    <div id="characterList"></div>
+<div id="relationshipList"></div>
 
-</section>
+<button type="button" id="addRelationshipBtn">
++ Add Relationship
+</button>
 
-
-<!-- ===== BOTTOM NAV ===== -->
-<nav class="bottom-nav">
-    <a href="index.html" class="nav-btn active">Home</a>
-    <a href="events.html" class="nav-btn">Events</a>
-    <a href="character.html" class="nav-btn">Characters</a>
-    <a href="world.html" class="nav-btn">World</a>
-    <a href="#" class="nav-btn">Folders</a>
-</nav>
+<button class="saveBtn" id="saveBtn">Save Changes</button>
+<button class="btn deleteBtn" id="deleteCharacterBtn">
+    Delete Character
+</button>
 
 
 
 
-<!-- FLOATING ADD CHARACTER BUTTON -->
-<a href="add-character.html" class="fab" id="fabBtn">
-    +
-</a>
+
+
+
+<!-- HTML END -->
+
+
+
 
 <!-- JAVA SCRIPT -->
 
+
 <script>
 
-/* =========================
-   GLOBAL STATE
-========================= */
-const list = document.getElementById("characterList");
-const searchInput = document.getElementById("searchInput");
-const folderBar = document.getElementById("folderBar");
-const addFolderBtn = document.getElementById("addFolderBtn");
+/* =============================
+   STATE LOAD
+============================= */
+let characters = JSON.parse(localStorage.getItem("characters")) || [];
+let editingId = localStorage.getItem("editingCharacterId");
+let char = characters.find(c => c.id === editingId) || null;
 
-let characters = [];
-let savedFolders = JSON.parse(localStorage.getItem("folders")) || [];
-let activeFolder = "All";
+let savedImageData = char?.image || null;
+
+let relationships = char?.relationships || [];
+let customFields = char?.customFields || [];
+let abilities = char?.abilities || [];
 
 
-/* =========================
-   LOAD CHARACTERS (SAFE)
-========================= */
-function loadCharacters(){
-    characters = JSON.parse(localStorage.getItem("characters")) || [];
+/* =============================
+   ELEMENTS
+============================= */
+const avatarPreview = document.getElementById("avatarPreview");
+const fileInput = document.getElementById("charImage");
+const editor = document.getElementById("editorContainer");
+const canvas = document.getElementById("imageCanvas");
+const ctx = canvas.getContext("2d");
+const zoomSlider = document.getElementById("zoomSlider");
+const useBtn = document.getElementById("useImageBtn");
 
-    // Auto-assign IDs if missing
-    let changed = false;
+const birthInput = document.getElementById("charBirthDate");
+const deathInput = document.getElementById("charDeathDate");
+const autoStats = document.getElementById("autoStats");
 
-    characters = characters.map(c => {
-        if(!c.id){
-            changed = true;
-            return { ...c, id: crypto.randomUUID() };
-        }
-        return c;
-    });
+const speciesInput = document.getElementById("charSpecies");
+const factionInput = document.getElementById("charFaction");
+const originInput = document.getElementById("charOrigin");
+const alignmentInput = document.getElementById("charAlignment");
 
-    if(changed){
-        localStorage.setItem("characters", JSON.stringify(characters));
+const relationshipList = document.getElementById("relationshipList");
+const addRelationshipBtn = document.getElementById("addRelationshipBtn");
+
+const customFieldsList = document.getElementById("customFieldsList");
+const addCustomFieldBtn = document.getElementById("addCustomFieldBtn");
+
+const deleteBtn = document.getElementById("deleteCharacterBtn");
+const saveBtn = document.getElementById("saveBtn");
+
+const abilityList = document.getElementById("abilityList");
+const addAbilityBtn = document.getElementById("addAbilityBtn");
+
+
+/* =============================
+   LOAD FORM DATA
+============================= */
+if(char){
+    charName.value = char.name || "";
+    charDesc.value = char.desc || "";
+    charTags.value = char.tags || "";
+    charFolder.value = char.folder || "";
+
+    birthInput.value = char.birthDate || "";
+    deathInput.value = char.deathDate || "";
+
+    speciesInput.value = char.species || "";
+    factionInput.value = char.faction || "";
+    originInput.value = char.origin || "";
+    alignmentInput.value = char.alignment || "";
+
+    if(char.image){
+        avatarPreview.src = char.image;
     }
-}    
 }
 
 
-/* =========================
-   CARD CREATOR
-========================= */
-function createCard(char){
+/* =============================
+   IMAGE EDITOR
+============================= */
+let img = new Image();
+let scale = 1;
+let posX = 0;
+let posY = 0;
+let dragging = false;
+let startX = 0;
+let startY = 0;
 
-    const card = document.createElement("div");
-    card.className = "card";
+fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if(!file) return;
 
-    card.innerHTML = `
-    <div class="card-content">
+    const reader = new FileReader();
 
-        ${char.image 
-            ? `<img src="${char.image}" class="avatar">`
-            : `<div class="avatar"></div>`
-        }
+    reader.onload = e => {
+        img.onload = () => {
+            editor.style.display = "block";
 
-        <div class="card-text">
-            <div class="card-title">${char.name || "Unnamed Character"}</div>
-            <div class="card-desc">${char.desc || ""}</div>
-            <div class="card-tags">${char.tags || ""}</div>
-        </div>
+            scale = Math.max(
+                canvas.width / img.width,
+                canvas.height / img.height
+            );
 
-        <div style="display:flex; flex-direction:column; gap:8px;">
-            <button class="editBtn" title="Edit">✏</button>
-            <button class="viewBtn" title="View">▶</button>
-        </div>
+            posX = (canvas.width - img.width * scale)/2;
+            posY = (canvas.height - img.height * scale)/2;
 
-    </div>
-    `;
+            draw();
+        };
 
-    // EDIT BUTTON
-    card.querySelector(".editBtn").addEventListener("click", (e)=>{
-        e.stopPropagation();
-        localStorage.setItem("editingCharacterId", char.id);
-        window.location.href = "character-manager.html";
-    });
+        img.src = e.target.result;
+    };
 
-    // VIEW BUTTON
-    card.querySelector(".viewBtn").addEventListener("click", (e)=>{
-        e.stopPropagation();
-        localStorage.setItem("viewingCharacterId", char.id);
-        window.location.href = "character-viewer.html";
-    });
+    reader.readAsDataURL(file);
+});
 
-    return card;
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(150,150,150,0,Math.PI*2);
+    ctx.clip();
+
+    ctx.drawImage(img, posX, posY, img.width*scale, img.height*scale);
+    ctx.restore();
 }
 
-/* =========================
-   RENDER LIST
-========================= */
-function renderList(array){
+function clampPosition(){
+    const imgW = img.width * scale;
+    const imgH = img.height * scale;
 
-    list.innerHTML = "";
+    const minX = canvas.width - imgW;
+    const minY = canvas.height - imgH;
 
-    if(array.length === 0){
-        list.innerHTML = "<p style='color:var(--text-muted)'>No characters found.</p>";
-        return;
+    posX = Math.min(0, Math.max(minX, posX));
+    posY = Math.min(0, Math.max(minY, posY));
+}
+
+function startDrag(e){
+    dragging = true;
+    const rect = canvas.getBoundingClientRect();
+
+    startX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    startY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+}
+
+function dragMove(e){
+    if(!dragging) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+
+    posX += x - startX;
+    posY += y - startY;
+
+    startX = x;
+    startY = y;
+
+    clampPosition();
+    draw();
+}
+
+canvas.addEventListener("mousedown", startDrag);
+canvas.addEventListener("mousemove", dragMove);
+canvas.addEventListener("mouseup", ()=> dragging=false);
+
+canvas.addEventListener("touchstart", startDrag);
+canvas.addEventListener("touchmove", dragMove, { passive:false });
+canvas.addEventListener("touchend", ()=> dragging=false);
+
+zoomSlider.addEventListener("input", ()=>{
+    scale = parseFloat(zoomSlider.value);
+    draw();
+});
+
+useBtn.addEventListener("click", ()=>{
+    savedImageData = canvas.toDataURL("image/png");
+    avatarPreview.src = savedImageData;
+    editor.style.display = "none";
+});
+
+
+/* =============================
+   AUTO STATS
+============================= */
+function updateAutoStats(){
+    const birth = birthInput.value ? new Date(birthInput.value) : null;
+    const death = deathInput.value ? new Date(deathInput.value) : null;
+
+    let status = death ? "Deceased" : "Alive";
+    let age = "Unknown";
+
+    if(birth){
+        const end = death || new Date();
+        age = Math.floor((end-birth)/(1000*60*60*24*365.25));
     }
 
-    array.forEach(char => {
-        list.appendChild(createCard(char));
-    });
+    autoStats.innerHTML = `Status: <b>${status}</b><br>Age: <b>${age}</b>`;
+    return {status, age};
 }
 
+birthInput.addEventListener("input", updateAutoStats);
+deathInput.addEventListener("input", updateAutoStats);
+updateAutoStats();
 
 
-/* =========================
-   FOLDER SYSTEM
-========================= */
-function getFolders(){
+/* =============================
+   SAVE CHARACTER
+============================= */
+saveBtn.addEventListener("click", ()=>{
 
-    const folders = new Set(["All"]);
+    const auto = updateAutoStats();
 
-    savedFolders.forEach(f => folders.add(f));
-
-    characters.forEach(c=>{
-        if(c.folder && c.folder.trim() !== ""){
-            folders.add(c.folder);
-        }
-    });
-
-    return [...folders];
-}
-
-function buildFolderBar(){
-
-    folderBar.innerHTML = "";
-
-    const folders = getFolders();
-
-    folders.forEach(folderName => {
-
-        const btn = document.createElement("div");
-        btn.className = "folder";
-        btn.textContent = folderName;
-
-        if(folderName === activeFolder){
-            btn.classList.add("active");
-        }
-
-        btn.addEventListener("click", ()=>{
-            activeFolder = folderName;
-            buildFolderBar();
-            applyFilters();
-        });
-
-        folderBar.appendChild(btn);
-    });
-}
-
-
-/* =========================
-   FILTER PIPELINE
-========================= */
-function applyFilters(){
-
-    loadCharacters();
-
-    let filtered = [...characters];
-
-    /* Folder filter */
-    if(activeFolder !== "All"){
-        filtered = filtered.filter(c =>
-            (c.folder || "").toLowerCase() === activeFolder.toLowerCase()
+    if(char){
+        characters = characters.map(c =>
+            c.id === editingId
+                ? {
+                    ...c,
+                    name: charName.value,
+                    desc: charDesc.value,
+                    tags: charTags.value,
+                    folder: charFolder.value,
+                    image: savedImageData,
+                    birthDate: birthInput.value || null,
+                    deathDate: deathInput.value || null,
+                    status: auto.status,
+                    age: auto.age,
+                    species: speciesInput.value,
+                    faction: factionInput.value,
+                    origin: originInput.value,
+                    alignment: alignmentInput.value,
+                    relationships,
+                    customFields,
+                    abilities,
+                    updatedAt: new Date().toISOString()
+                }
+                : c
         );
-    }
-
-    /* Search filter */
-    const query = searchInput.value.toLowerCase().trim();
-
-    if(query){
-        filtered = filtered.filter(char => {
-
-            const name = (char.name || "").toLowerCase();
-            const tags = (char.tags || "").toLowerCase();
-
-            if(query.startsWith("#")){
-                return tags.includes(query);
-            }
-
-            return name.includes(query) || tags.includes(query);
+    } else {
+        characters.push({
+            id: crypto.randomUUID(),
+            name: charName.value,
+            desc: charDesc.value,
+            tags: charTags.value,
+            folder: charFolder.value,
+            image: savedImageData,
+            birthDate: birthInput.value || null,
+            deathDate: deathInput.value || null,
+            status: auto.status,
+            age: auto.age,
+            species: speciesInput.value,
+            faction: factionInput.value,
+            origin: originInput.value,
+            alignment: alignmentInput.value,
+            relationships,
+            customFields,
+            abilities,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
         });
     }
 
-    renderList(filtered);
-}
+    localStorage.setItem("characters", JSON.stringify(characters));
+    window.location.href = "character.html";
+});
 
 
-/* =========================
-   ADD FOLDER
-========================= */
-addFolderBtn.addEventListener("click", ()=>{
+/* =============================
+   DELETE CHARACTER
+============================= */
+deleteBtn.addEventListener("click", ()=>{
 
-    const name = prompt("Folder name:");
-
-    if(!name) return;
-
-    const trimmed = name.trim();
-
-    if(trimmed === "") return;
-
-    if(savedFolders.includes(trimmed)){
-        alert("Folder already exists.");
+    if(!char){
+        alert("Cannot delete — no character loaded.");
         return;
     }
 
-    savedFolders.push(trimmed);
-    localStorage.setItem("folders", JSON.stringify(savedFolders));
+    if(!confirm("Delete this character permanently?")) return;
 
-    buildFolderBar();
+    characters = characters.filter(c => c.id !== editingId);
+    localStorage.setItem("characters", JSON.stringify(characters));
+    localStorage.removeItem("editingCharacterId");
+
+    window.location.href = "character.html";
 });
 
 
-/* =========================
-   EVENTS
-========================= */
-searchInput.addEventListener("input", applyFilters);
-
-
-/* Refresh if returning from manager page */
-window.addEventListener("focus", () => {
-    init();
+/* =============================
+   RELATIONSHIPS
+============================= */
+addRelationshipBtn.addEventListener("click", ()=>{
+    relationships.push({name:"", type:""});
+    renderRelationships();
 });
 
+function renderRelationships(){
+    relationshipList.innerHTML = "";
 
-/* =========================
-   INIT
-========================= */
-function init(){
-    loadCharacters();
-    buildFolderBar();
-    applyFilters();
+    relationships.forEach((rel,i)=>{
+        const row = document.createElement("div");
+
+        row.innerHTML = `
+        <input value="${rel.name||""}" data-i="${i}" class="rel-name">
+        <input value="${rel.type||""}" data-i="${i}" class="rel-type">
+        <button data-i="${i}" class="rel-del">Delete</button>
+        `;
+
+        relationshipList.appendChild(row);
+    });
+
+    document.querySelectorAll(".rel-name").forEach(el=>{
+        el.oninput = e => relationships[e.target.dataset.i].name = e.target.value;
+    });
+
+    document.querySelectorAll(".rel-type").forEach(el=>{
+        el.oninput = e => relationships[e.target.dataset.i].type = e.target.value;
+    });
+
+    document.querySelectorAll(".rel-del").forEach(el=>{
+        el.onclick = e=>{
+            relationships.splice(e.target.dataset.i,1);
+            renderRelationships();
+        };
+    });
 }
 
-init();
+renderRelationships();
+
+
+/* =============================
+   CUSTOM FIELDS
+============================= */
+addCustomFieldBtn.addEventListener("click", ()=>{
+    customFields.push({
+        id: crypto.randomUUID(),
+        label:"",
+        type:"text",
+        value:"",
+        options:[]
+    });
+    renderCustomFields();
+});
+
+function renderCustomFields(){
+    customFieldsList.innerHTML = "";
+
+    customFields.forEach((f,i)=>{
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+        <input value="${f.label}" data-i="${i}" class="cf-label">
+        <select data-i="${i}" class="cf-type">
+            <option value="text">Text</option>
+            <option value="longtext">Long Text</option>
+            <option value="number">Number</option>
+            <option value="boolean">True/False</option>
+        </select>
+        <button data-i="${i}" class="cf-del">Delete</button>
+        `;
+
+        customFieldsList.appendChild(div);
+    });
+
+    document.querySelectorAll(".cf-label").forEach(el=>{
+        el.oninput = e => customFields[e.target.dataset.i].label = e.target.value;
+    });
+
+    document.querySelectorAll(".cf-type").forEach(el=>{
+        el.onchange = e => customFields[e.target.dataset.i].type = e.target.value;
+    });
+
+    document.querySelectorAll(".cf-del").forEach(el=>{
+        el.onclick = e=>{
+            customFields.splice(e.target.dataset.i,1);
+            renderCustomFields();
+        };
+    });
+}
+
+renderCustomFields();
+
+
+/* =============================
+   ABILITIES
+============================= */
+addAbilityBtn.addEventListener("click", ()=>{
+    abilities.push({
+        id: crypto.randomUUID(),
+        name:"",
+        type:"",
+        power:0,
+        description:""
+    });
+    renderAbilities();
+});
+
+function renderAbilities(){
+    abilityList.innerHTML = "";
+
+    abilities.forEach(a=>{
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+        <input value="${a.name}" data-id="${a.id}" class="ab-name">
+        <input value="${a.type}" data-id="${a.id}" class="ab-type">
+        <input type="number" value="${a.power}" data-id="${a.id}" class="ab-power">
+        <textarea data-id="${a.id}" class="ab-desc">${a.description}</textarea>
+        <button data-id="${a.id}" class="ab-del">Delete</button>
+        `;
+
+        abilityList.appendChild(div);
+    });
+}
+
+abilityList.addEventListener("input", e=>{
+    const id = e.target.dataset.id;
+    const a = abilities.find(x=>x.id===id);
+    if(!a) return;
+
+    if(e.target.classList.contains("ab-name")) a.name = e.target.value;
+    if(e.target.classList.contains("ab-type")) a.type = e.target.value;
+    if(e.target.classList.contains("ab-power")) a.power = parseInt(e.target.value)||0;
+    if(e.target.classList.contains("ab-desc")) a.description = e.target.value;
+});
+
+abilityList.addEventListener("click", e=>{
+    if(!e.target.classList.contains("ab-del")) return;
+    const id = e.target.dataset.id;
+    abilities = abilities.filter(a=>a.id!==id);
+    renderAbilities();
+});
+
+renderAbilities();
 
 </script>
+
 </body>
 </html>
