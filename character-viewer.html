@@ -9,99 +9,173 @@
 
 <style>
 body{
-    background:#0f1117;
+    margin:0;
+    min-height:100vh;
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+    background:
+        radial-gradient(circle at 20% 20%, #1b2140, transparent 40%),
+        radial-gradient(circle at 80% 60%, #16253a, transparent 40%),
+        #0f1117;
+
     color:white;
-    font-family:system-ui;
-    padding:20px;
-}
-
-/* Viewer Card */
-.viewer{
-    max-width:700px;
-    margin:auto;
-    background:#1a1d26;
     padding:30px;
-    border-radius:20px;
-    box-shadow:0 20px 50px rgba(0,0,0,.4);
 }
 
-.viewer img{
+/* MAIN WRAPPER */
+.viewer{
+    max-width:780px;
+    margin:auto;
+
+    background:rgba(26,29,38,0.75);
+    backdrop-filter: blur(18px);
+
+    border-radius:28px;
+    padding:34px;
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    box-shadow:
+        0 40px 80px rgba(0,0,0,.45),
+        inset 0 0 0 1px rgba(255,255,255,0.02);
+}
+
+/* HEADER */
+.hero{
+    display:flex;
+    gap:24px;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.hero img{
     width:180px;
     height:180px;
     border-radius:50%;
     object-fit:cover;
-    display:block;
-    margin:auto;
+
+    box-shadow:
+        0 0 0 4px rgba(90,162,255,.2),
+        0 12px 40px rgba(0,0,0,.5);
+}
+
+.hero-text{
+    flex:1;
 }
 
 .name{
-    text-align:center;
-    font-size:28px;
-    font-weight:700;
-    margin-top:16px;
+    font-size:34px;
+    font-weight:800;
+    letter-spacing:.5px;
 }
 
-.section{
-    margin-top:24px;
-}
-
-.label{
+.tags{
+    margin-top:8px;
     color:#9aa3b2;
+}
+
+/* SECTION CARDS */
+.section{
+    margin-top:26px;
+    padding:18px;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.05);
+}
+
+.section-title{
+    font-size:13px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:#8e97aa;
+    margin-bottom:10px;
+}
+
+.section-content{
+    font-size:15px;
+    line-height:1.6;
+}
+
+/* RELATIONSHIP CHIPS */
+.relationship-chip{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:999px;
+    background:rgba(90,162,255,.15);
+    margin:4px;
     font-size:13px;
 }
 
-.value{
-    margin-top:4px;
-    font-size:16px;
-}
-
-button{
-    margin-top:20px;
+/* DOWNLOAD BUTTON */
+.downloadBtn{
+    margin-top:30px;
     width:100%;
-    padding:14px;
+    padding:16px;
+
     border:none;
-    border-radius:12px;
-    background:#5aa2ff;
+    border-radius:16px;
+
+    background:linear-gradient(135deg,#5aa2ff,#7ab6ff);
+
     color:white;
     font-size:16px;
+    font-weight:600;
+
     cursor:pointer;
+
+    box-shadow:0 10px 30px rgba(90,162,255,.25);
+    transition:.2s;
 }
+
+.downloadBtn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 18px 40px rgba(90,162,255,.35);
+}
+
+
 </style>
 </head>
 
 <body>
 
 <div class="viewer" id="viewerCard">
-    <img id="vImage">
-    <div class="name" id="vName"></div>
 
-    <div class="section">
-        <div class="label">Description</div>
-        <div class="value" id="vDesc"></div>
+    <div class="hero">
+        <img id="vImage">
+
+        <div class="hero-text">
+            <div class="name" id="vName"></div>
+            <div class="tags" id="vTags"></div>
+        </div>
     </div>
 
     <div class="section">
-        <div class="label">Tags</div>
-        <div class="value" id="vTags"></div>
+        <div class="section-title">Description</div>
+        <div class="section-content" id="vDesc"></div>
     </div>
 
     <div class="section">
-        <div class="label">Lore</div>
-        <div class="value" id="vLore"></div>
+        <div class="section-title">Lore</div>
+        <div class="section-content" id="vLore"></div>
     </div>
 
     <div class="section">
-        <div class="label">Life</div>
-        <div class="value" id="vLife"></div>
+        <div class="section-title">Life Data</div>
+        <div class="section-content" id="vLife"></div>
     </div>
 
     <div class="section">
-        <div class="label">Relationships</div>
-        <div class="value" id="vRelationships"></div>
+        <div class="section-title">Relationships</div>
+        <div class="section-content" id="vRelationships"></div>
     </div>
+
 </div>
 
-<button id="downloadBtn">Download PNG</button>
+<button id="downloadBtn" class="downloadBtn">
+Download Character PNG
+</button>
 
 <script>
 const chars = JSON.parse(localStorage.getItem("characters")) || [];
@@ -132,9 +206,11 @@ Status: ${char.status || "-"}<br>
 Age: ${char.age || "-"}
 `;
 
+
 vRelationships.innerHTML = (char.relationships || [])
-.map(r => `${r.name} — ${r.type}`)
-.join("<br>") || "-";
+.map(r => `<span class="relationship-chip">${r.name} — ${r.type}</span>`)
+.join("") || "None";
+
 
 /* DOWNLOAD PNG */
 downloadBtn.onclick = () => {
