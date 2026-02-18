@@ -338,6 +338,7 @@ const alignmentInput = document.getElementById("charAlignment");
 
 const relationshipList = document.getElementById("relationshipList");
 const addRelationshipBtn = document.getElementById("addRelationshipBtn");
+const deleteBtn = document.getElementById("deleteCharacterBtn");
 
 
 
@@ -662,8 +663,6 @@ renderRelationships();
 /* =====================
     DELETE CHARACTERS
 =========================*/
-const deleteBtn = document.getElementById("deleteCharacterBtn");
-
 deleteBtn.addEventListener("click", () => {
 
     const confirmDelete = confirm(
@@ -672,14 +671,17 @@ deleteBtn.addEventListener("click", () => {
 
     if (!confirmDelete) return;
 
-    // Example storage key
-    localStorage.removeItem("currentCharacter");
+    // Remove character from array
+    characters.splice(index, 1);
+
+    // Save updated array
+    localStorage.setItem("characters", JSON.stringify(characters));
 
     alert("Character deleted.");
 
-    // Optional redirect
-    window.location.href = "index.html";
-});      
+    // Redirect back to list
+    window.location.href = "character.html";
+});
 
 </script>
 
