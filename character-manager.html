@@ -6,34 +6,93 @@
 <title>Character Manager</title>
 
 <style>
+/* =========================
+   THEME TOKENS
+========================= */
 :root{
     --bg-main:#0f1117;
     --bg-card:#1a1d26;
     --bg-accent:#232734;
+
     --accent:#5aa2ff;
     --danger:#ff5a7a;
+
     --radius:14px;
+
+    --space-xs:6px;
+    --space-sm:10px;
+    --space-md:16px;
+    --space-lg:24px;
+
+    --transition:0.18s ease;
+}
+
+/* =========================
+   BASE
+========================= */
+*{
+    box-sizing:border-box;
 }
 
 body{
     background:var(--bg-main);
     color:white;
-    font-family:system-ui;
-    padding:20px;
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    padding:var(--space-lg);
+    line-height:1.4;
 }
 
-/* INPUTS */
-input, textarea{
+/* =========================
+   CARD LAYOUT (Optional)
+========================= */
+.card{
+    background:var(--bg-card);
+    border-radius:var(--radius);
+    padding:var(--space-lg);
+}
+
+/* =========================
+   INPUTS / TEXTAREAS / SELECT
+========================= */
+input,
+textarea,
+select{
     width:100%;
     padding:14px;
-    margin-bottom:16px;
+    margin-bottom:var(--space-md);
     border-radius:var(--radius);
     border:none;
     background:var(--bg-card);
     color:white;
+    font-size:14px;
+
+    transition:var(--transition);
+    outline:none;
 }
 
-/* BUTTONS */
+/* Focus glow */
+input:focus,
+textarea:focus,
+select:focus{
+    background:var(--bg-accent);
+    box-shadow:0 0 0 2px var(--accent);
+}
+
+/* Textarea usability */
+textarea{
+    resize:vertical;
+    min-height:120px;
+}
+
+/* Select reset */
+select{
+    appearance:none;
+    cursor:pointer;
+}
+
+/* =========================
+   BUTTON SYSTEM
+========================= */
 button{
     width:100%;
     padding:16px;
@@ -41,12 +100,35 @@ button{
     border-radius:var(--radius);
     margin-bottom:12px;
     font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+
+    transition:var(--transition);
 }
 
-.saveBtn{ background:var(--accent); }
-.deleteBtn{ background:var(--danger); }
+/* Variants */
+.btn-primary{
+    background:var(--accent);
+}
 
-/* IMAGE */
+.btn-danger{
+    background:var(--danger);
+}
+
+/* Hover / Active */
+button:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.05);
+}
+
+button:active{
+    transform:translateY(0);
+    filter:brightness(.95);
+}
+
+/* =========================
+   AVATAR PREVIEW
+========================= */
 .avatarPreview{
     width:140px;
     height:140px;
@@ -54,13 +136,15 @@ button{
     object-fit:cover;
     background:var(--bg-accent);
     display:block;
-    margin:0 auto 16px auto;
+    margin:0 auto var(--space-md) auto;
 }
 
-/* CANVAS EDITOR */
+/* =========================
+   CANVAS EDITOR
+========================= */
 #editorContainer{
     display:none;
-    margin-bottom:20px;
+    margin-bottom:var(--space-lg);
 }
 
 canvas{
@@ -68,14 +152,93 @@ canvas{
     height:260px;
     border-radius:50%;
     display:block;
-    margin:0 auto 10px auto;
+    margin:0 auto var(--space-sm) auto;
     background:#000;
 }
 
 #zoomSlider{
     width:100%;
-    margin-bottom:10px;
+    margin-bottom:var(--space-sm);
 }
+
+/* =========================
+   UTILITY HELPERS
+========================= */
+.center{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.stack > * + *{
+    margin-top:var(--space-md);
+}
+
+.hidden{
+    display:none !important;
+}
+
+/* =========================
+   MOBILE TWEAKS
+========================= */
+@media (max-width:480px){
+    body{
+        padding:var(--space-md);
+    }
+
+    canvas{
+        width:220px;
+        height:220px;
+    }
+
+    .avatarPreview{
+        width:120px;
+        height:120px;
+    }
+}
+
+/* Base button */
+.btn{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:var(--radius);
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.18s ease;
+}
+
+/* SAVE */
+.saveBtn{
+    background:var(--accent);
+    color:white;
+}
+
+.saveBtn:hover{
+    filter:brightness(1.1);
+}
+
+.saveBtn:active{
+    filter:brightness(.9);
+}
+
+
+/* DELETE */
+.deleteBtn{
+    background:var(--danger);
+    color:white;
+}
+
+.deleteBtn:hover{
+    filter:brightness(1.1);
+}
+
+.deleteBtn:active{
+    filter:brightness(.9);
+}
+
+
 </style>
 </head>
 
@@ -98,16 +261,61 @@ canvas{
 <input id="charTags" placeholder="Tags">
 <input id="charFolder" placeholder="Folder">
 
+<h2 style="margin-top:20px;">Life Timeline</h2>
+
+<input type="date" id="charBirthDate" placeholder="Birth Date">
+<input type="date" id="charDeathDate" placeholder="Death Date">
+
+<div id="autoStats" style="
+background:var(--bg-card);
+padding:14px;
+border-radius:var(--radius);
+margin-bottom:16px;
+font-size:14px;
+color:#9aa3b2;
+">
+</div>
+
+
+<h2 style="margin-top:20px;">Lore Metadata</h2>
+
+<input id="charSpecies" placeholder="Species">
+<input id="charFaction" placeholder="Faction">
+<input id="charOrigin" placeholder="Origin World / Location">
+
+<select id="charAlignment">
+    <option value="">Alignment</option>
+    <option>Hero</option>
+    <option>Neutral</option>
+    <option>Villain</option>
+    <option>Anti-Hero</option>
+    <option>Anti-Villain</option>
+</select>
+
+<h2 style="margin-top:20px;">Relationships</h2>
+
+<div id="relationshipList"></div>
+
+<button type="button" id="addRelationshipBtn">
++ Add Relationship
+</button>
+
 <button class="saveBtn" id="saveBtn">Save Changes</button>
 <button class="deleteBtn" id="deleteBtn">Delete Character</button>
+
+
+
+
+<!-- JAVA SCRIPT -->
+
 
 <script>
 /* ===== LOAD CHARACTER ===== */
 let characters = JSON.parse(localStorage.getItem("characters")) || [];
 let index = localStorage.getItem("editingCharacterIndex");
 let char = characters[index];
-
 let savedImageData = char?.image || null;
+
 
 /* ===== ELEMENTS ===== */
 const avatarPreview = document.getElementById("avatarPreview");
@@ -117,6 +325,26 @@ const canvas = document.getElementById("imageCanvas");
 const ctx = canvas.getContext("2d");
 const zoomSlider = document.getElementById("zoomSlider");
 const useBtn = document.getElementById("useImageBtn");
+const birthInput = document.getElementById("charBirthDate");
+const deathInput = document.getElementById("charDeathDate");
+const autoStats = document.getElementById("autoStats");
+
+const speciesInput = document.getElementById("charSpecies");
+const factionInput = document.getElementById("charFaction");
+const originInput = document.getElementById("charOrigin");
+const alignmentInput = document.getElementById("charAlignment");
+
+const relationshipList = document.getElementById("relationshipList");
+const addRelationshipBtn = document.getElementById("addRelationshipBtn");
+
+
+
+
+let relationships = char?.relationships || [];
+
+
+
+
 
 /* ===== LOAD DATA INTO FORM ===== */
 if(char){
@@ -124,6 +352,14 @@ if(char){
     charDesc.value = char.desc || "";
     charTags.value = char.tags || "";
     charFolder.value = char.folder || "";
+    birthInput.value = char.birthDate || "";
+deathInput.value = char.deathDate || "";
+speciesInput.value = char.species || "";
+factionInput.value = char.faction || "";
+originInput.value = char.origin || "";
+alignmentInput.value = char.alignment || "";
+
+
 
     if(char.image){
         avatarPreview.src = char.image;
@@ -253,31 +489,173 @@ function clampPosition(){
     posY = Math.min(0, Math.max(minY, posY));
 }
 
+/* BIRTH AND DEATH INPUT */
 
+birthInput.addEventListener("input", updateAutoStats);
+deathInput.addEventListener("input", updateAutoStats);
+
+
+/* DATE AND DEATH */
+
+
+function updateAutoStats(){
+
+    const birth = birthInput.value ? new Date(birthInput.value) : null;
+    const death = deathInput.value ? new Date(deathInput.value) : null;
+
+    let status = "Alive";
+    let age = "Unknown";
+
+    if(birth){
+        const endDate = death || new Date();
+
+        age = Math.floor(
+            (endDate - birth) / (1000 * 60 * 60 * 24 * 365.25)
+        );
+    }
+
+    if(death){
+        status = "Deceased";
+    }
+
+    autoStats.innerHTML = `
+    Status: <b>${status}</b><br>
+    Age: <b>${age}</b>
+    `;
+
+    return { status, age };
+}
+
+updateAutoStats();
 
 /* ===== SAVE ===== */
 saveBtn.onclick = () => {
+
+    const auto = updateAutoStats();
 
     characters[index] = {
         name: charName.value,
         desc: charDesc.value,
         tags: charTags.value,
         folder: charFolder.value,
-        image: savedImageData
+        image: savedImageData,
+
+        birthDate: birthInput.value || null,
+        deathDate: deathInput.value || null,
+
+        status: auto.status,
+        age: auto.age,
+        species: speciesInput.value,
+        faction: factionInput.value,
+        origin: originInput.value,
+        alignment: alignmentInput.value,
+        relationships: relationships,
+
+
+        
+        
     };
 
     localStorage.setItem("characters", JSON.stringify(characters));
     window.location.href = "character.html";
 };
 
-/* ===== DELETE ===== */
-deleteBtn.onclick = () => {
+/* ALIGNMENT */
 
-    characters.splice(index, 1);
+function updateAlignmentStyle(){
 
-    localStorage.setItem("characters", JSON.stringify(characters));
-    window.location.href = "character.html";
-};
+    alignmentInput.classList.remove(
+        "alignment-hero",
+        "alignment-villain",
+        "alignment-neutral",
+        "alignment-anti-hero",
+        "alignment-anti-villain"
+    );
+
+    const val = alignmentInput.value.toLowerCase();
+
+    if(val === "hero") alignmentInput.classList.add("alignment-hero");
+    if(val === "villain") alignmentInput.classList.add("alignment-villain");
+    if(val === "neutral") alignmentInput.classList.add("alignment-neutral");
+    if(val === "anti-hero") alignmentInput.classList.add("alignment-anti-hero");
+    if(val === "anti-villain") alignmentInput.classList.add("alignment-anti-villain");
+    alignmentInput.addEventListener("change", updateAlignmentStyle);
+    updateAlignmentStyle();
+
+}
+
+/* ===== RELATIONSHIPS ===== */
+
+addRelationshipBtn.addEventListener("click", ()=>{
+    relationships.push({
+        name:"",
+        type:""
+    });
+    renderRelationships();
+});
+
+function renderRelationships(){
+
+    relationshipList.innerHTML = "";
+
+    relationships.forEach((rel, i)=>{
+
+        const row = document.createElement("div");
+
+        row.style.display = "flex";
+        row.style.gap = "8px";
+        row.style.marginBottom = "10px";
+
+        row.innerHTML = `
+        <input placeholder="Name"
+            value="${rel.name || ""}"
+            data-index="${i}"
+            class="rel-name">
+
+        <input placeholder="Type (Friend, Rival, etc)"
+            value="${rel.type || ""}"
+            data-index="${i}"
+            class="rel-type">
+
+        <button data-index="${i}" class="rel-delete" style="
+            width:60px;
+            background:var(--danger);
+        ">X</button>
+        `;
+
+        relationshipList.appendChild(row);
+    });
+
+    bindRelationshipEvents();
+}
+
+function bindRelationshipEvents(){
+
+    document.querySelectorAll(".rel-name").forEach(el=>{
+        el.addEventListener("input", e=>{
+            const i = e.target.dataset.index;
+            relationships[i].name = e.target.value;
+        });
+    });
+
+    document.querySelectorAll(".rel-type").forEach(el=>{
+        el.addEventListener("input", e=>{
+            const i = e.target.dataset.index;
+            relationships[i].type = e.target.value;
+        });
+    });
+
+    document.querySelectorAll(".rel-delete").forEach(btn=>{
+        btn.addEventListener("click", e=>{
+            const i = e.target.dataset.index;
+            relationships.splice(i,1);
+            renderRelationships();
+        });
+    });
+}
+
+renderRelationships();
 </script>
+
 </body>
 </html>
