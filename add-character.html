@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Character</title>
+
+<style>
+:root{
+    --bg-main:#0f1117;
+    --bg-card:#1a1d26;
+    --bg-accent:#232734;
+    --text-main:#e6e9ef;
+    --accent:#5aa2ff;
+    --radius:14px;
+}
+
+body{
+    background:var(--bg-main);
+    color:var(--text-main);
+    font-family:system-ui;
+    padding:20px;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+input, textarea{
+    width:100%;
+    padding:14px;
+    margin-bottom:16px;
+    border-radius:var(--radius);
+    border:none;
+    background:var(--bg-card);
+    color:white;
+}
+
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:var(--radius);
+    background:var(--accent);
+    color:white;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Add Character</h1>
+
+<form id="characterForm">
+
+<input id="charName" placeholder="Character Name" required>
+
+<textarea id="charDesc" placeholder="Description"></textarea>
+
+<input id="charTags" placeholder="Tags (#hero #villain #tamer)">
+
+<input id="charFolder" placeholder="Folder (Main Cast / Side / etc)">
+
+<button type="submit">Save Character</button>
+
+</form>
+
+<script>
+const form = document.getElementById("characterForm");
+
+form.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const character = {
+        name: document.getElementById("charName").value,
+        desc: document.getElementById("charDesc").value,
+        tags: document.getElementById("charTags").value,
+        folder: document.getElementById("charFolder").value
+    };
+
+    let characters = JSON.parse(localStorage.getItem("characters")) || [];
+
+    characters.push(character);
+
+    localStorage.setItem("characters", JSON.stringify(characters));
+
+    window.location.href = "characters.html";
+});
+</script>
+
+</body>
+</html>
