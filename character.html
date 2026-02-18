@@ -315,9 +315,6 @@ let activeFolder = "All";
 ========================= */
 function loadCharacters(){
     characters = JSON.parse(localStorage.getItem("characters")) || [];
-    
-    function loadCharacters(){
-    characters = JSON.parse(localStorage.getItem("characters")) || [];
 
     // Auto-assign IDs if missing
     let changed = false;
@@ -333,9 +330,7 @@ function loadCharacters(){
     if(changed){
         localStorage.setItem("characters", JSON.stringify(characters));
     }
-}
-
-    
+}    
 }
 
 
@@ -363,7 +358,7 @@ function createCard(char){
 
         <div style="display:flex; flex-direction:column; gap:8px;">
             <button class="editBtn" title="Edit">✏</button>
-            <button class="viewBtn" title="View">👁</button>
+            <button class="viewBtn" title="View">▶</button>
         </div>
 
     </div>
