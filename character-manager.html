@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Manager</title>
+
+<style>
+:root{
+    --bg-main:#0f1117;
+    --bg-card:#1a1d26;
+    --accent:#5aa2ff;
+    --danger:#ff5a7a;
+    --radius:14px;
+}
+
+body{
+    background:var(--bg-main);
+    color:white;
+    font-family:system-ui;
+    padding:20px;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+input, textarea{
+    width:100%;
+    padding:14px;
+    margin-bottom:16px;
+    border-radius:var(--radius);
+    border:none;
+    background:var(--bg-card);
+    color:white;
+}
+
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:var(--radius);
+    margin-bottom:12px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.saveBtn{
+    background:var(--accent);
+}
+
+.deleteBtn{
+    background:var(--danger);
+}
+</style>
+</head>
+
+<body>
+
+<h1>Edit Character</h1>
+
+<input id="charName">
+<textarea id="charDesc"></textarea>
+<input id="charTags">
+<input id="charFolder">
+
+<button class="saveBtn" id="saveBtn">Save Changes</button>
+<button class="deleteBtn" id="deleteBtn">Delete Character</button>
+
+<script>
+let characters = JSON.parse(localStorage.getItem("characters")) || [];
+let index = localStorage.getItem("editingCharacterIndex");
+
+let char = characters[index];
+
+if(char){
+    document.getElementById("charName").value = char.name || "";
+    document.getElementById("charDesc").value = char.desc || "";
+    document.getElementById("charTags").value = char.tags || "";
+    document.getElementById("charFolder").value = char.folder || "";
+}
+
+// SAVE EDIT
+document.getElementById("saveBtn").onclick = () => {
+
+    characters[index] = {
+        name: document.getElementById("charName").value,
+        desc: document.getElementById("charDesc").value,
+        tags: document.getElementById("charTags").value,
+        folder: document.getElementById("charFolder").value
+    };
+
+    localStorage.setItem("characters", JSON.stringify(characters));
+
+    window.location.href = "character.html";
+};
+
+// DELETE
+document.getElementById("deleteBtn").onclick = () => {
+
+    characters.splice(index, 1);
+
+    localStorage.setItem("characters", JSON.stringify(characters));
+
+    window.location.href = "character.html";
+};
+</script>
+
+</body>
+</html>
