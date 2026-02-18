@@ -342,7 +342,7 @@ function createCard(char, index){
 
         <div style="display:flex; flex-direction:column; gap:8px;">
             <button class="editBtn" title="Edit">✏</button>
-            <button class="viewBtn" title="View">⎙</button>
+            <button class="viewBtn" title="View">👁</button>
         </div>
 
     </div>
@@ -351,14 +351,14 @@ function createCard(char, index){
     // EDIT BUTTON
     card.querySelector(".editBtn").addEventListener("click", (e)=>{
         e.stopPropagation();
-        localStorage.setItem("editingCharacterIndex", index);
+localStorage.setItem("editingCharacterId", character.id);
         window.location.href = "character-manager.html";
     });
 
     // VIEW BUTTON
     card.querySelector(".viewBtn").addEventListener("click", (e)=>{
         e.stopPropagation();
-        localStorage.setItem("viewingCharacterIndex", index);
+        localStorage.setItem("viewingCharacterIndex", character.id);
         window.location.href = "character-viewer.html";
     });
 
