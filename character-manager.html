@@ -148,10 +148,13 @@ fileInput.addEventListener("change", function(){
     reader.onload = function(e){
         img.onload = function(){
             editor.style.display = "block";
-            scale = 1;
-            posX = 0;
-            posY = 0;
-            draw();
+            scale = Math.max(
+    canvas.width / img.width,
+    canvas.height / img.height
+);
+            posX = (canvas.width - img.width * scale) / 2;
+posY = (canvas.height - img.height * scale) / 2;
+     
         };
         img.src = e.target.result;
     };
@@ -176,9 +179,18 @@ canvas.addEventListener("touchstart", startDrag);
 
 function startDrag(e){
     dragging = true;
-    startX = e.offsetX || e.touches[0].clientX;
-    startY = e.offsetY || e.touches[0].clientY;
+
+    let rect = canvas.getBoundingClientRect();
+
+    startX = e.touches
+        ? e.touches[0].clientX - rect.left
+        : e.clientX - rect.left;
+
+    startY = e.touches
+        ? e.touches[0].clientY - rect.top
+        : e.clientY - rect.top;
 }
+
 
 canvas.addEventListener("mousemove", dragMove);
 canvas.addEventListener("touchmove", dragMove);
@@ -186,8 +198,15 @@ canvas.addEventListener("touchmove", dragMove);
 function dragMove(e){
     if(!dragging) return;
 
-    let x = e.offsetX || e.touches[0].clientX;
-    let y = e.offsetY || e.touches[0].clientY;
+    let rect = canvas.getBoundingClientRect();
+
+    let x = e.touches
+        ? e.touches[0].clientX - rect.left
+        : e.clientX - rect.left;
+
+    let y = e.touches
+        ? e.touches[0].clientY - rect.top
+        : e.clientY - rect.top;
 
     posX += x - startX;
     posY += y - startY;
@@ -195,11 +214,16 @@ function dragMove(e){
     startX = x;
     startY = y;
 
+    clampPosition();
     draw();
 }
 
 canvas.addEventListener("mouseup", ()=> dragging=false);
 canvas.addEventListener("touchend", ()=> dragging=false);
+canvas.addEventListener("touchmove", e=>{
+    if(dragging) e.preventDefault();
+}, { passive:false });
+
 
 zoomSlider.addEventListener("input", ()=>{
     scale = parseFloat(zoomSlider.value);
@@ -211,6 +235,25 @@ useBtn.addEventListener("click", ()=>{
     avatarPreview.src = savedImageData;
     editor.style.display = "none";
 });
+
+
+
+
+// DRAG BOUNDARIES
+
+function clampPosition(){
+    const imgW = img.width * scale;
+    const imgH = img.height * scale;
+
+    // Prevent empty space inside circle
+    const minX = canvas.width - imgW;
+    const minY = canvas.height - imgH;
+
+    posX = Math.min(0, Math.max(minX, posX));
+    posY = Math.min(0, Math.max(minY, posY));
+}
+
+
 
 /* ===== SAVE ===== */
 saveBtn.onclick = () => {
@@ -236,6 +279,5 @@ deleteBtn.onclick = () => {
     window.location.href = "character.html";
 };
 </script>
-
 </body>
 </html>
