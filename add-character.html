@@ -9,15 +9,13 @@
 :root{
     --bg-main:#0f1117;
     --bg-card:#1a1d26;
-    --bg-accent:#232734;
-    --text-main:#e6e9ef;
     --accent:#5aa2ff;
     --radius:14px;
 }
 
 body{
     background:var(--bg-main);
-    color:var(--text-main);
+    color:white;
     font-family:system-ui;
     padding:20px;
 }
@@ -44,6 +42,7 @@ button{
     background:var(--accent);
     color:white;
     font-size:16px;
+    cursor:pointer;
 }
 </style>
 </head>
@@ -58,7 +57,7 @@ button{
 
 <textarea id="charDesc" placeholder="Description"></textarea>
 
-<input id="charTags" placeholder="Tags (#hero #villain #tamer)">
+<input id="charTags" placeholder="Tags (#hero #villain)">
 
 <input id="charFolder" placeholder="Folder (Main Cast / Side / etc)">
 
@@ -66,19 +65,19 @@ button{
 
 </form>
 
+
 /* JAVA SCRIPT */
     
 <script>
-const form = document.getElementById("characterForm");
+document.getElementById("characterForm").addEventListener("submit", function(e){
 
-form.addEventListener("submit", function(e){
     e.preventDefault();
 
     const character = {
-        name: document.getElementById("charName").value,
-        desc: document.getElementById("charDesc").value,
-        tags: document.getElementById("charTags").value,
-        folder: document.getElementById("charFolder").value
+        name: document.getElementById("charName").value.trim(),
+        desc: document.getElementById("charDesc").value.trim(),
+        tags: document.getElementById("charTags").value.trim(),
+        folder: document.getElementById("charFolder").value.trim()
     };
 
     let characters = JSON.parse(localStorage.getItem("characters")) || [];
@@ -86,14 +85,11 @@ form.addEventListener("submit", function(e){
     characters.push(character);
 
     localStorage.setItem("characters", JSON.stringify(characters));
-
+    
     window.location.replace("characters.html");
-    
+
 });
-    
 </script>
 
-
-    
 </body>
 </html>
