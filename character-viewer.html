@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Viewer</title>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+body{
+    background:#0f1117;
+    color:white;
+    font-family:system-ui;
+    padding:20px;
+}
+
+/* Viewer Card */
+.viewer{
+    max-width:700px;
+    margin:auto;
+    background:#1a1d26;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+
+.viewer img{
+    width:180px;
+    height:180px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+    margin:auto;
+}
+
+.name{
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+    margin-top:16px;
+}
+
+.section{
+    margin-top:24px;
+}
+
+.label{
+    color:#9aa3b2;
+    font-size:13px;
+}
+
+.value{
+    margin-top:4px;
+    font-size:16px;
+}
+
+button{
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:#5aa2ff;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="viewer" id="viewerCard">
+    <img id="vImage">
+    <div class="name" id="vName"></div>
+
+    <div class="section">
+        <div class="label">Description</div>
+        <div class="value" id="vDesc"></div>
+    </div>
+
+    <div class="section">
+        <div class="label">Tags</div>
+        <div class="value" id="vTags"></div>
+    </div>
+
+    <div class="section">
+        <div class="label">Lore</div>
+        <div class="value" id="vLore"></div>
+    </div>
+
+    <div class="section">
+        <div class="label">Life</div>
+        <div class="value" id="vLife"></div>
+    </div>
+
+    <div class="section">
+        <div class="label">Relationships</div>
+        <div class="value" id="vRelationships"></div>
+    </div>
+</div>
+
+<button id="downloadBtn">Download PNG</button>
+
+<script>
+const chars = JSON.parse(localStorage.getItem("characters")) || [];
+const index = localStorage.getItem("viewingCharacterIndex");
+const char = chars[index];
+
+if(!char){
+    alert("Character not found");
+    location.href = "character.html";
+}
+
+vImage.src = char.image || "";
+vName.textContent = char.name || "Unnamed";
+vDesc.textContent = char.desc || "-";
+vTags.textContent = char.tags || "-";
+
+vLore.innerHTML = `
+Species: ${char.species || "-"}<br>
+Faction: ${char.faction || "-"}<br>
+Origin: ${char.origin || "-"}<br>
+Alignment: ${char.alignment || "-"}
+`;
+
+vLife.innerHTML = `
+Birth: ${char.birthDate || "-"}<br>
+Death: ${char.deathDate || "Alive"}<br>
+Status: ${char.status || "-"}<br>
+Age: ${char.age || "-"}
+`;
+
+vRelationships.innerHTML = (char.relationships || [])
+.map(r => `${r.name} — ${r.type}`)
+.join("<br>") || "-";
+
+/* DOWNLOAD PNG */
+downloadBtn.onclick = () => {
+    html2canvas(document.getElementById("viewerCard")).then(canvas=>{
+        const link = document.createElement("a");
+        link.download = (char.name || "character") + ".png";
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+};
+</script>
+
+</body>
+</html>
