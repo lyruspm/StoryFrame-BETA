@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Characters - World Builder</title>
+
+<style>
+:root{
+    --bg-main:#0f1117;
+    --bg-card:#1a1d26;
+    --bg-accent:#232734;
+    --text-main:#e6e9ef;
+    --text-muted:#9aa3b2;
+    --accent:#5aa2ff;
+    --radius:14px;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:system-ui, sans-serif;
+}
+
+body{
+    background:var(--bg-main);
+    color:var(--text-main);
+    padding-bottom:80px;
+}
+
+/* HEADER */
+header{
+    padding:18px;
+    background:var(--bg-card);
+    position:sticky;
+    top:0;
+    border-bottom:1px solid #2a2f3d;
+}
+
+.search-box{
+    margin-top:12px;
+}
+
+.search-box input{
+    width:100%;
+    padding:12px;
+    border-radius:var(--radius);
+    border:none;
+    background:var(--bg-accent);
+    color:white;
+}
+
+/* FOLDER BAR */
+.folder-bar{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding:14px;
+}
+
+.folder{
+    background:var(--bg-accent);
+    padding:10px 16px;
+    border-radius:999px;
+    font-size:14px;
+}
+
+/* CARDS */
+.section{
+    padding:16px;
+}
+
+.card{
+    background:var(--bg-card);
+    padding:16px;
+    border-radius:var(--radius);
+    margin-bottom:14px;
+    border:1px solid #2a2f3d;
+}
+
+.card-title{
+    font-weight:600;
+}
+
+.card-tags{
+    font-size:12px;
+    color:var(--text-muted);
+    margin-top:6px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:65px;
+    background:var(--bg-card);
+    border-top:1px solid #2a2f3d;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+}
+
+.nav-btn{
+    font-size:12px;
+    color:var(--text-muted);
+    text-decoration:none;
+}
+
+.nav-btn.active{
+    color:var(--accent);
+}
+
+
+/* FLOATING ACTION BUTTON */
+.fab{
+    position:fixed;
+    bottom:90px;
+    right:20px;
+
+    width:60px;
+    height:60px;
+    border-radius:50%;
+
+    background:var(--accent);
+    color:white;
+
+    font-size:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-decoration:none;
+
+    box-shadow:0 6px 20px rgba(0,0,0,0.4);
+    transition:transform 0.3s ease;
+}
+
+/* ROTATE EFFECT WHEN PRESSED */
+.fab:active{
+    transform:rotate(90deg) scale(0.95);
+}
+
+
+
+</style>
+</head>
+
+<body>
+   
+
+<header>
+    
+<!-- MAIN BODY -->
+    
+    <h1>Characters</h1>
+
+    <div class="search-box">
+        <input type="text" placeholder="Search Characters or #Tags (Later)">
+    </div>
+</header>
+
+
+<div class="folder-bar">
+    <div class="folder">All</div>
+    <div class="folder">Main Cast</div>
+    <div class="folder">Side Characters</div>
+    <div class="folder">Antagonists</div>
+</div>
+
+<section class="section">
+
+
+
+<!-- ===== CHARACTER LIST ===== -->
+<section class="section">
+    <h2>Character List</h2>
+
+    <div id="characterList"></div>
+
+</section>
+
+<section class="section" id="characterList">
+</section>
+
+
+</section>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="bottom-nav">
+    <a href="index.html" class="nav-btn active">Home</a>
+    <a href="events.html" class="nav-btn">Events</a>
+    <a href="character.html" class="nav-btn">Characters</a>
+    <a href="world.html" class="nav-btn">World</a>
+    <a href="#" class="nav-btn">Folders</a>
+</nav>
+
+<!-- FLOATING ADD CHARACTER BUTTON -->
+<a href="add-character.html" class="fab" id="fabBtn">
+    +
+</a>
+
+
+<!-- JAVA SCRIPT -->
+
+<script>
+const fab = document.getElementById("fabBtn");
+
+fab.addEventListener("click", function(){
+    fab.style.transform = "rotate(180deg)";
+});
+</script>
+
+<script>
+const list = document.getElementById("characterList");
+
+let characters = JSON.parse(localStorage.getItem("characters")) || [];
+
+characters.forEach(char => {
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+        <div class="card-title">${char.name}</div>
+        <div>${char.desc || ""}</div>
+        <div class="card-tags">${char.tags || ""}</div>
+    `;
+
+    list.appendChild(card);
+});
+</script>
+
+
+
+</body>
+</html>
