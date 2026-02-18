@@ -28,7 +28,7 @@ body{
 .viewer{
     --viewer-bg:#1a1d26;
 
-    background:var(--viewer-bg);
+    background:#1a1d26;
     backdrop-filter: blur(22px) saturate(140%);
 
     border-radius:28px;
@@ -330,6 +330,7 @@ body{
         <span id="angleLabel">135°</span>
     </div>
 
+</div>
 
 <div class="viewer" id="viewerCard">
 
@@ -389,6 +390,7 @@ const vTags = document.getElementById("vTags");
 const vLore = document.getElementById("vLore");
 const vLife = document.getElementById("vLife");
 const vRelationships = document.getElementById("vRelationships");
+const viewer = document.getElementById("viewerCard");
 const downloadBtn = document.getElementById("downloadBtn");
 
 
@@ -421,20 +423,11 @@ vRelationships.innerHTML = (char.relationships || [])
 
 downloadBtn.onclick = async () => {
 
-    const computed = getComputedStyle(viewer);
-    const originalBg = viewer.style.background;
-
-    /* Force solid fallback if gradient */
-    if(computed.backgroundImage !== "none"){
-        viewer.style.background = computed.backgroundColor || "#1a1d26";
-    }
-
     const canvas = await html2canvas(viewer, {
         backgroundColor: null,
-        useCORS: true
+        useCORS: true,
+        scale: 2
     });
-
-    viewer.style.background = originalBg;
 
     const link = document.createElement("a");
     link.download = (char.name || "character") + ".png";
@@ -447,7 +440,6 @@ downloadBtn.onclick = async () => {
 
 const picker = document.getElementById("bgColorPicker");
 const hexInput = document.getElementById("bgHexInput");
-const viewer = document.getElementById("viewerCard");
 
 /* HEX → RGB */
 function hexToRgb(hex){
@@ -472,44 +464,6 @@ function getBrightness({r,g,b}){
     return (r*299 + g*587 + b*114) / 1000;
 }
 
-/* APPLY BACKGROUND + AUTO TEXT */
-function applyBackground(hex){
-
-    if(!hex.startsWith("#")) hex = "#"+hex;
-
-    viewer.style.setProperty("--viewer-bg", hex);
-
-    const rgb = hexToRgb(hex);
-    const brightness = getBrightness(rgb);
-
-    if(brightness > 150){
-        viewer.style.color = "#111";
-    }else{
-        viewer.style.color = "#fff";
-    }
-}
-
-
-/* PICKER → HEX */
-picker.addEventListener("input", ()=>{
-    hexInput.value = picker.value;
-    applyBackground(picker.value);
-});
-
-/* HEX → PICKER */
-hexInput.addEventListener("input", ()=>{
-
-    let val = hexInput.value.trim();
-
-    if(!val.startsWith("#")) val = "#"+val;
-
-    if(/^#[0-9A-F]{6}$/i.test(val)){
-        picker.value = val;
-        applyBackground(val);
-    }
-});
-
-
 /* ======================= GRADIENT ENGINE ====================== */
 
 const gradA = document.getElementById("gradA");
@@ -519,26 +473,50 @@ const gradBHex = document.getElementById("gradBHex");
 const gradAngle = document.getElementById("gradAngle");
 const angleLabel = document.getElementById("angleLabel");
 
-function applyGradient(){
+/* ================= BACKGROUND ENGINE ================= */
 
+function applySolid(hex){
+    viewer.style.background = hex;
+
+    const rgb = hexToRgb(hex);
+    const brightness = getBrightness(rgb);
+    viewer.style.color = brightness > 150 ? "#111" : "#fff";
+}
+
+function applyGradient(){
     const a = gradA.value;
     const b = gradB.value;
     const angle = gradAngle.value;
 
-    viewer.style.setProperty(
-        "--viewer-bg",
-        `linear-gradient(${angle}deg, ${a}, ${b})`
-    );
+    viewer.style.background =
+        `linear-gradient(${angle}deg, ${a}, ${b})`;
 
     autoTextFromGradient(a, b);
 }
 
-gradA.oninput = ()=> {
+/* PICKER SOLID MODE */
+picker.addEventListener("input", ()=>{
+    hexInput.value = picker.value;
+    applySolid(picker.value);
+});
+
+hexInput.addEventListener("input", ()=>{
+    let val = hexInput.value.trim();
+    if(!val.startsWith("#")) val = "#"+val;
+
+    if(/^#[0-9A-F]{6}$/i.test(val)){
+        picker.value = val;
+        applySolid(val);
+    }
+});
+
+/* GRADIENT CONTROLS */
+gradA.oninput = ()=>{
     gradAHex.value = gradA.value;
     applyGradient();
 };
 
-gradB.oninput = ()=> {
+gradB.oninput = ()=>{
     gradBHex.value = gradB.value;
     applyGradient();
 };
@@ -548,6 +526,28 @@ gradAngle.oninput = ()=>{
     applyGradient();
 };
 
+/* HEX INPUT SAFE */
+gradAHex.oninput = ()=>{
+    let val = gradAHex.value.trim();
+    if(val.length < 7) return;
+    if(!val.startsWith("#")) val = "#"+val;
+
+    if(/^#[0-9A-F]{6}$/i.test(val)){
+        gradA.value = val;
+        applyGradient();
+    }
+};
+
+gradBHex.oninput = ()=>{
+    let val = gradBHex.value.trim();
+    if(val.length < 7) return;
+    if(!val.startsWith("#")) val = "#"+val;
+
+    if(/^#[0-9A-F]{6}$/i.test(val)){
+        gradB.value = val;
+        applyGradient();
+    }
+};
 
 /* TEXT DETECTION */
 
@@ -576,24 +576,9 @@ gradAHex.addEventListener("input", ()=>{
         gradA.value = val;
         applyGradient();
         
-   if(val.length < 7) return;
-
+   if(val.length < 7) return;   
     }
 });
-
-gradAHex.addEventListener("input", ()=>{
-    let val = gradAHex.value.trim();
-
-    if(val.length < 7) return;
-
-    if(!val.startsWith("#")) val = "#"+val;
-
-    if(/^#[0-9A-F]{6}$/i.test(val)){
-        gradA.value = val;
-        applyGradient();
-    }
-});
-
 
 </script>
 
