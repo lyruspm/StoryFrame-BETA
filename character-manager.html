@@ -258,6 +258,10 @@ canvas{
     <button type="button" id="useImageBtn">Use Image</button>
 </div>
 
+<button type="button" id="freeformBtn" class="btn hidden">
+    Freeform Edit
+</button>
+
 <input id="charName" placeholder="Name">
 <textarea id="charDesc" placeholder="Description"></textarea>
 <input id="charTags" placeholder="Tags">
@@ -409,6 +413,8 @@ if(char){
 
     if(char.image){
         avatarPreview.src = char.image;
+        
+    document.getElementById("freeformBtn").classList.remove("hidden");   
     }
 }
 
@@ -664,6 +670,23 @@ function renderRelationships(){
 }
 
 renderRelationships();
+
+/*===========FREEFORM EDIT==============*/
+
+const freeformBtn = document.getElementById("freeformBtn");
+
+freeformBtn.addEventListener("click", ()=>{
+
+    if(!char){
+        alert("You must save the character before using Freeform Edit.");
+        return;
+    }
+
+    localStorage.setItem("editingCharacterId", char.id);
+
+    window.location.href = "freeform-editor.html";
+});
+
 
 
 /* =============================
