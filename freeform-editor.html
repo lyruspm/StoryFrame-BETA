@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freeform Profile Editor</title>
+
+<style>
+:root{
+    --bg-main:#0f1117;
+    --bg-card:#1a1d26;
+    --bg-accent:#232734;
+    --accent:#5aa2ff;
+    --text:#e6e9ef;
+    --radius:14px;
+}
+
+body{
+    margin:0;
+    padding:20px;
+    background:var(--bg-main);
+    color:var(--text);
+    font-family:system-ui;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+textarea{
+    width:100%;
+    min-height:200px;
+    background:var(--bg-card);
+    color:white;
+    border:none;
+    border-radius:var(--radius);
+    padding:14px;
+    margin-bottom:16px;
+    resize:vertical;
+    font-family:monospace;
+    font-size:13px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:var(--radius);
+    margin-bottom:12px;
+    background:var(--accent);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.secondary{
+    background:var(--bg-accent);
+}
+
+.preview-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.7);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+}
+
+.preview-box{
+    width:100%;
+    max-width:900px;
+    height:90%;
+    background:#111;
+    border-radius:var(--radius);
+    overflow:auto;
+    position:relative;
+}
+
+.close-btn{
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:#ff5a7a;
+    border:none;
+    padding:6px 12px;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+}
+
+#previewRoot{
+    padding:20px;
+}
+
+.profile {
+  background:#1a1d26;
+  padding:20px;
+  border-radius:12px;
+}
+
+.profile img {
+  width:200px;
+  border-radius:50%;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<h1>Freeform Profile Editor</h1>
+
+<label>HTML Layout</label>
+<textarea id="htmlInput" placeholder="<div class='profile'>...</div>"></textarea>
+
+<label>CSS Styling</label>
+<textarea id="cssInput" placeholder=".profile { color:white; }"></textarea>
+
+<button id="saveBtn">Save Profile</button>
+<button class="secondary" id="previewBtn">Preview</button>
+
+<div class="preview-overlay" id="previewOverlay">
+    <div class="preview-box">
+        <button class="close-btn" id="closePreview">Close</button>
+        <div id="previewRoot"></div>
+    </div>
+</div>
+
+<script>
+
+/* =========================
+   LOAD CHARACTER
+========================= */
+let characters = JSON.parse(localStorage.getItem("characters")) || [];
+let editingId = localStorage.getItem("editingCharacterId");
+let char = characters.find(c => c.id === editingId);
+
+if(!char){
+    alert("No character selected.");
+    window.location.href = "character.html";
+}
+
+/* Ensure freeform exists */
+if(!char.freeform){
+    char.freeform = {
+        html: "",
+        css: ""
+    };
+}
+
+/* Fill editor */
+const htmlInput = document.getElementById("htmlInput");
+const cssInput = document.getElementById("cssInput");
+
+htmlInput.value = char.freeform.html || "";
+cssInput.value = char.freeform.css || "";
+
+
+/* =========================
+   SAVE
+========================= */
+document.getElementById("saveBtn").addEventListener("click", ()=>{
+
+    char.freeform.html = htmlInput.value;
+    char.freeform.css = cssInput.value;
+    char.updatedAt = new Date().toISOString();
+
+    localStorage.setItem("characters", JSON.stringify(characters));
+
+    alert("Freeform profile saved.");
+});
+
+
+/* =========================
+   SANITIZER
+========================= */
+function sanitizeHTML(input){
+
+    // Remove script tags
+    input = input.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+
+    // Remove inline event handlers
+    input = input.replace(/on\w+="[^"]*"/gi, "");
+    input = input.replace(/on\w+='[^']*'/gi, "");
+
+    return input;
+}
+
+
+/* =========================
+   TEMPLATE VARIABLES
+========================= */
+function applyTemplate(html){
+
+    const replacements = {
+        "{{name}}": char.name || "",
+        "{{desc}}": char.desc || "",
+        "{{tags}}": char.tags || "",
+        "{{folder}}": char.folder || "",
+        "{{image}}": char.image || ""
+    };
+
+    Object.keys(replacements).forEach(key=>{
+        html = html.split(key).join(replacements[key]);
+    });
+
+    return html;
+}
+
+
+/* =========================
+   PREVIEW
+========================= */
+const previewBtn = document.getElementById("previewBtn");
+const previewOverlay = document.getElementById("previewOverlay");
+const previewRoot = document.getElementById("previewRoot");
+const closePreview = document.getElementById("closePreview");
+
+previewBtn.addEventListener("click", ()=>{
+
+    let safeHTML = sanitizeHTML(htmlInput.value);
+    safeHTML = applyTemplate(safeHTML);
+
+    const safeCSS = sanitizeHTML(cssInput.value);
+
+    previewRoot.innerHTML = `
+        <style>
+            ${safeCSS}
+        </style>
+        ${safeHTML}
+    `;
+
+    previewOverlay.style.display = "flex";
+});
+
+closePreview.addEventListener("click", ()=>{
+    previewOverlay.style.display = "none";
+});
+
+</script>
+
+</body>
+</html>
