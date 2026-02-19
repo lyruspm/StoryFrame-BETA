@@ -79,7 +79,6 @@ textarea:focus{
     box-shadow:0 0 0 3px var(--accent-soft);
 }
 
-/* Scrollbar styling */
 textarea::-webkit-scrollbar{
     width:8px;
 }
@@ -213,45 +212,57 @@ button:active{
 }
 
 /* =========================
-   CODE EDITOR
+   CODE EDITOR (FIXED)
 ========================= */
 
 .editor{
     position:relative;
     margin-bottom:24px;
+    height:260px; /* fixed height for proper layering */
 }
 
+/* Shared layout */
 .editor textarea,
 .editor .highlight{
-    font-family:Consolas, Monaco, monospace;
-    font-size:13px;
-    line-height:1.6;
-    padding:16px;
-    border-radius:14px;
-}
-
-.editor textarea{
-    position:relative;
+    position:absolute;
     inset:0;
     width:100%;
     height:100%;
-    resize:vertical;
-    background:transparent;
-    color:transparent;
-    caret-color:#5aa2ff;
-    border:1px solid #252b3a;
-    z-index:2;
-    margin-bottom:24px;
-    min-height:220px;
+    padding:16px;
+    font-family:Consolas, Monaco, monospace;
+    font-size:13px;
+    line-height:1.6;
+    border-radius:var(--radius);
+    box-sizing:border-box;
+    overflow:auto;
 }
 
+/* Highlight layer */
 .editor .highlight{
-    background:#11151d;
-    border:1px solid #252b3a;
+    background:var(--bg-input);
+    border:1px solid var(--border);
     white-space:pre-wrap;
     word-wrap:break-word;
-    color:#e6e9ef;
-    min-height:220px;
+    color:var(--text-main);
+    z-index:1;
+    pointer-events:none; /* important */
+}
+
+/* Real textarea */
+.editor textarea{
+    background:transparent;
+    color:transparent;
+    caret-color:var(--accent);
+    border:1px solid var(--border);
+    resize:none;
+    z-index:2;
+}
+
+/* Focus ring */
+.editor textarea:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
 }
 
 /* Syntax Colors */
@@ -556,6 +567,19 @@ cssInput.addEventListener("scroll", ()=>{
 });
 
 updateEditors();
+
+function syncScroll(input, highlight){
+    highlight.scrollTop = input.scrollTop;
+    highlight.scrollLeft = input.scrollLeft;
+}
+
+htmlInput.addEventListener("scroll", ()=>{
+    syncScroll(htmlInput, htmlHighlight);
+});
+
+cssInput.addEventListener("scroll", ()=>{
+    syncScroll(cssInput, cssHighlight);
+});
 
 </script>
 
