@@ -84,7 +84,7 @@ label{
 .editor .highlight{
     position:absolute;
     inset:0;
-    
+
     padding:20px;
 
     font-family:Consolas, Monaco, monospace;
@@ -92,11 +92,14 @@ label{
     line-height:20px;
 
     letter-spacing:0;
+    font-kerning:none;
+    font-variant-ligatures:none;
+
     tab-size:4;
 
     white-space:pre;
-    word-wrap:normal;
-    overflow:auto;
+    overflow-wrap:normal;
+    word-break:normal;
 
     box-sizing:border-box;
 }
@@ -109,6 +112,8 @@ label{
     z-index:1;
 
     overflow:hidden;
+    
+    display:block;
 }
 
 /* textarea typing layer */
@@ -121,6 +126,8 @@ label{
     z-index:2;
 
     overflow:auto;
+    
+    display:block;
 }
 
 /* focus glow */
@@ -641,6 +648,9 @@ cssInput.addEventListener("input", updateEditors);
 
 updateEditors();
 
+
 </script>
+
+
 </body>
 </html>
