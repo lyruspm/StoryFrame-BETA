@@ -84,7 +84,9 @@ label{
 .editor textarea,
 .editor .highlight{
     position:absolute;
-    inset:0;
+    top:0;
+    left:0;
+    width:100%;
     transform: translateZ(0);
     color:#ffffff;
 
@@ -697,7 +699,11 @@ function autoResize(textarea, highlight){
     highlight.style.height = newHeight;
     editor.style.height = newHeight;
 }
-
+function bindAutoResize(textarea, highlight){
+    textarea.addEventListener("input", ()=>{
+        autoResize(textarea, highlight);
+    });
+}
 bindAutoResize(htmlInput, htmlHighlight);
 bindAutoResize(cssInput, cssHighlight);
 
@@ -714,9 +720,16 @@ document.querySelectorAll(".section-header").forEach(header=>{
 
         toggle.textContent =
             section.classList.contains("collapsed") ? "+" : "−";
+
+        // FORCE RESET HEIGHT WHEN COLLAPSING
+        if(section.classList.contains("collapsed")){
+            const editor = section.querySelector(".editor");
+            if(editor){
+                editor.style.height = "0px";
+            }
+        }
     });
 });
-
 // Close button
 closePreview.addEventListener("click", closeOverlay);
 
