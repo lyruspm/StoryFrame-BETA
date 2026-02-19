@@ -260,19 +260,28 @@ button{
 
 .close-btn{
     position:absolute;
-    top:18px;
-    alignment:center;
-    right:18px;
+    top:16px;
+    right:16px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    min-width:70px;
+    height:32px;
+
     background:var(--danger);
     color:white;
     border:none;
-    padding:8px 16px;
+
     border-radius:var(--radius-sm);
     font-size:12px;
     font-weight:600;
+
     cursor:pointer;
     transition:all 0.2s ease;
 
+    z-index:10;
 }
 
 .close-btn:hover{
@@ -339,6 +348,20 @@ button{
 
 .toggle{
     font-size:16px;
+}
+
+/*=============== PREVIEW ===============*/
+
+.preview-overlay{
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s ease;
+}
+
+.preview-overlay.active{
+    display:flex;
+    opacity:1;
+    pointer-events:auto;
 }
 
 
@@ -719,7 +742,9 @@ document.querySelectorAll(".section-header").forEach(header=>{
 });
 
 // Close button
-closePreview.addEventListener("click", closeOverlay);
+if(closePreview){
+    closePreview.addEventListener("click", closeOverlay);
+}
 
 // Click outside preview box
 previewOverlay.addEventListener("click", (e) => {
