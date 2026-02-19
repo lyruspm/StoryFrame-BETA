@@ -7,102 +7,211 @@
 
 <style>
 :root{
-    --bg-main:#0f1117;
-    --bg-card:#1a1d26;
-    --bg-accent:#232734;
+    --bg-main:#0d0f14;
+    --bg-panel:#161a23;
+    --bg-elev:#1c2130;
+    --bg-input:#11151d;
     --accent:#5aa2ff;
-    --text:#e6e9ef;
+    --accent-soft:rgba(90,162,255,0.15);
+    --danger:#ff5a7a;
+    --text-main:#e6e9ef;
+    --text-dim:#9aa3b2;
+    --border:#252b3a;
     --radius:14px;
+    --radius-sm:10px;
+    --shadow:0 10px 30px rgba(0,0,0,0.4);
 }
+
+/* =========================
+   BASE
+========================= */
 
 body{
     margin:0;
-    padding:20px;
-    background:var(--bg-main);
-    color:var(--text);
-    font-family:system-ui;
+    padding:32px;
+    background:linear-gradient(180deg,#0d0f14 0%, #0f1117 100%);
+    color:var(--text-main);
+    font-family:Inter, system-ui, -apple-system, sans-serif;
+    letter-spacing:0.2px;
 }
 
 h1{
-    margin-bottom:20px;
+    margin:0 0 28px 0;
+    font-weight:700;
+    font-size:28px;
+    letter-spacing:0.5px;
 }
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+/* =========================
+   TEXTAREAS
+========================= */
 
 textarea{
     width:100%;
-    min-height:200px;
-    background:var(--bg-card);
-    color:white;
-    border:none;
+    min-height:220px;
+    background:var(--bg-input);
+    color:var(--text-main);
+    border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:14px;
-    margin-bottom:16px;
+    padding:16px;
+    margin-bottom:24px;
     resize:vertical;
-    font-family:monospace;
+    font-family:Consolas, Monaco, monospace;
     font-size:13px;
+    line-height:1.5;
+    transition:all 0.2s ease;
+    box-shadow:inset 0 0 0 1px transparent;
 }
+
+textarea:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+}
+
+/* Scrollbar styling */
+textarea::-webkit-scrollbar{
+    width:8px;
+}
+textarea::-webkit-scrollbar-thumb{
+    background:#2a3142;
+    border-radius:8px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
 
 button{
     width:100%;
     padding:14px;
     border:none;
     border-radius:var(--radius);
-    margin-bottom:12px;
-    background:var(--accent);
-    color:white;
+    margin-bottom:14px;
     font-weight:600;
+    font-size:14px;
     cursor:pointer;
+    transition:all 0.2s ease;
+    box-shadow:var(--shadow);
 }
 
-.secondary{
-    background:var(--bg-accent);
+button:hover{
+    transform:translateY(-2px);
 }
+
+button:active{
+    transform:translateY(0);
+}
+
+/* Primary */
+#saveBtn{
+    background:var(--accent);
+    color:white;
+}
+
+#saveBtn:hover{
+    box-shadow:0 0 18px var(--accent-soft);
+}
+
+/* Secondary */
+.secondary{
+    background:var(--bg-elev);
+    color:var(--text-main);
+    border:1px solid var(--border);
+}
+
+.secondary:hover{
+    background:#22283a;
+}
+
+/* =========================
+   PREVIEW OVERLAY
+========================= */
 
 .preview-overlay{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.7);
+    background:rgba(0,0,0,0.8);
+    backdrop-filter:blur(6px);
     display:none;
     justify-content:center;
     align-items:center;
     padding:40px;
+    z-index:999;
 }
 
 .preview-box{
     width:100%;
-    max-width:900px;
+    max-width:1000px;
     height:90%;
-    background:#111;
+    background:var(--bg-panel);
     border-radius:var(--radius);
     overflow:auto;
     position:relative;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    border:1px solid var(--border);
+    animation:fadeIn 0.2s ease;
 }
 
+@keyframes fadeIn{
+    from{ opacity:0; transform:scale(0.98); }
+    to{ opacity:1; transform:scale(1); }
+}
+
+/* Close Button */
 .close-btn{
     position:absolute;
-    top:10px;
-    right:10px;
-    background:#ff5a7a;
+    top:16px;
+    right:16px;
+    background:var(--danger);
     border:none;
-    padding:6px 12px;
-    border-radius:8px;
+    padding:6px 14px;
+    border-radius:var(--radius-sm);
     color:white;
+    font-size:12px;
+    font-weight:600;
     cursor:pointer;
+    transition:all 0.2s ease;
+}
+
+.close-btn:hover{
+    box-shadow:0 0 14px rgba(255,90,122,0.4);
 }
 
 #previewRoot{
-    padding:20px;
+    padding:32px;
 }
 
-.profile {
-  background:#1a1d26;
-  padding:20px;
-  border-radius:12px;
+/* =========================
+   DEFAULT PROFILE STYLING
+========================= */
+
+.profile{
+    background:var(--bg-elev);
+    padding:28px;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow);
 }
 
-.profile img {
-  width:200px;
-  border-radius:50%;
+.profile img{
+    width:200px;
+    border-radius:50%;
+    display:block;
+    margin-bottom:16px;
+    border:4px solid var(--accent-soft);
 }
+
 
 
 </style>
