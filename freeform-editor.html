@@ -261,8 +261,11 @@ button{
 .close-btn{
     position:absolute;
     top:18px;
-    alignment:center;
     right:18px;
+
+    width:auto;           
+    display:inline-block;    
+
     background:var(--danger);
     color:white;
     border:none;
@@ -272,8 +275,8 @@ button{
     font-weight:600;
     cursor:pointer;
     transition:all 0.2s ease;
-
 }
+
 
 .close-btn:hover{
     transform:translateY(-2px);
@@ -504,24 +507,19 @@ const previewOverlay = document.getElementById("previewOverlay");
 const previewRoot = document.getElementById("previewRoot");
 const closePreview = document.getElementById("closePreview");
 
-previewBtn.addEventListener("click", ()=>{
+previewBtn.addEventListener("click", () => {
 
     let safeHTML = sanitizeHTML(htmlInput.value);
     safeHTML = applyTemplate(safeHTML);
     const safeCSS = sanitizeCSS(cssInput.value);
 
-    previewRoot.innerHTML = "";
-    previewOverlay.style.display = "none";
-    previewRoot.innerHTML = "";
+    previewRoot.innerHTML = ""; // clear old preview only
 
     const iframe = document.createElement("iframe");
-
     iframe.style.width = "100%";
     iframe.style.height = "100%";
     iframe.style.border = "none";
-    
 
-    // Scripts disabled
     iframe.setAttribute("sandbox", "");
 
     iframe.srcdoc = `
@@ -550,6 +548,7 @@ previewBtn.addEventListener("click", ()=>{
 
     previewOverlay.style.display = "flex";
 });
+
 /* =========================
    ESCAPE
 ========================= */
