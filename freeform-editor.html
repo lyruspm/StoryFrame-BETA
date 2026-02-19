@@ -86,6 +86,7 @@ label{
     position:absolute;
     inset:0;
     transform: translateZ(0);
+    color:#ffffff;
 
     padding:20px;
 
@@ -508,12 +509,15 @@ previewBtn.addEventListener("click", ()=>{
     const safeCSS = sanitizeCSS(cssInput.value);
 
     previewRoot.innerHTML = "";
+    previewOverlay.style.display = "none";
+    previewRoot.innerHTML = "";
 
     const iframe = document.createElement("iframe");
 
     iframe.style.width = "100%";
     iframe.style.height = "100%";
     iframe.style.border = "none";
+    
 
     // Scripts disabled
     iframe.setAttribute("sandbox", "");
@@ -716,6 +720,29 @@ document.querySelectorAll(".section-header").forEach(header=>{
             section.classList.contains("collapsed") ? "+" : "−";
     });
 });
+
+// Close button
+closePreview.addEventListener("click", closeOverlay);
+
+// Click outside preview box
+previewOverlay.addEventListener("click", (e) => {
+    if (e.target === previewOverlay) {
+        closeOverlay();
+    }
+});
+
+// ESC key
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && previewOverlay.style.display === "flex") {
+        closeOverlay();
+    }
+});
+
+function closeOverlay() {
+    previewOverlay.style.display = "none";
+    previewRoot.innerHTML = "";
+}
+
 
 </script>
 
