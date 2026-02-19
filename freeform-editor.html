@@ -26,6 +26,10 @@
    BASE
 ========================= */
 
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
     padding:32px;
@@ -53,41 +57,6 @@ label{
 }
 
 /* =========================
-   TEXTAREAS
-========================= */
-
-textarea{
-    width:100%;
-    min-height:220px;
-    background:var(--bg-input);
-    color:var(--text-main);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:16px;
-    margin-bottom:24px;
-    resize:vertical;
-    font-family:Consolas, Monaco, monospace;
-    font-size:13px;
-    line-height:1.5;
-    transition:all 0.2s ease;
-    box-shadow:inset 0 0 0 1px transparent;
-}
-
-textarea:focus{
-    outline:none;
-    border-color:var(--accent);
-    box-shadow:0 0 0 3px var(--accent-soft);
-}
-
-textarea::-webkit-scrollbar{
-    width:8px;
-}
-textarea::-webkit-scrollbar-thumb{
-    background:#2a3142;
-    border-radius:8px;
-}
-
-/* =========================
    BUTTONS
 ========================= */
 
@@ -112,7 +81,6 @@ button:active{
     transform:translateY(0);
 }
 
-/* Primary */
 #saveBtn{
     background:var(--accent);
     color:white;
@@ -122,7 +90,6 @@ button:active{
     box-shadow:0 0 18px var(--accent-soft);
 }
 
-/* Secondary */
 .secondary{
     background:var(--bg-elev);
     color:var(--text-main);
@@ -159,15 +126,8 @@ button:active{
     position:relative;
     box-shadow:0 20px 60px rgba(0,0,0,0.6);
     border:1px solid var(--border);
-    animation:fadeIn 0.2s ease;
 }
 
-@keyframes fadeIn{
-    from{ opacity:0; transform:scale(0.98); }
-    to{ opacity:1; transform:scale(1); }
-}
-
-/* Close Button */
 .close-btn{
     position:absolute;
     top:16px;
@@ -180,11 +140,6 @@ button:active{
     font-size:12px;
     font-weight:600;
     cursor:pointer;
-    transition:all 0.2s ease;
-}
-
-.close-btn:hover{
-    box-shadow:0 0 14px rgba(255,90,122,0.4);
 }
 
 #previewRoot{
@@ -192,7 +147,7 @@ button:active{
 }
 
 /* =========================
-   DEFAULT PROFILE STYLING
+   DEFAULT PROFILE
 ========================= */
 
 .profile{
@@ -212,60 +167,74 @@ button:active{
 }
 
 /* =========================
-   CODE EDITOR (FIXED)
+   CODE EDITOR (PERFECT SYNC)
 ========================= */
 
 .editor{
     position:relative;
+    height:260px;
     margin-bottom:24px;
-    height:260px; /* fixed height for proper layering */
+    border-radius:var(--radius);
 }
 
-/* Shared layout */
+/* shared layer */
 .editor textarea,
 .editor .highlight{
     position:absolute;
     inset:0;
-    width:100%;
-    height:100%;
     padding:16px;
+
     font-family:Consolas, Monaco, monospace;
     font-size:13px;
-    line-height:1.6;
+    line-height:20px; /* fixed pixel height = no drift */
+
     border-radius:var(--radius);
-    box-sizing:border-box;
     overflow:auto;
+    white-space:pre; /* no wrapping drift */
 }
 
-/* Highlight layer */
+/* highlight layer */
 .editor .highlight{
     background:var(--bg-input);
     border:1px solid var(--border);
-    white-space:pre-wrap;
-    word-wrap:break-word;
     color:var(--text-main);
+    pointer-events:none;
     z-index:1;
-    pointer-events:none; /* important */
 }
 
-/* Real textarea */
+/* real typing layer */
 .editor textarea{
     background:transparent;
     color:transparent;
     caret-color:var(--accent);
     border:1px solid var(--border);
     resize:none;
+    outline:none;
     z-index:2;
 }
 
-/* Focus ring */
 .editor textarea:focus{
-    outline:none;
     border-color:var(--accent);
     box-shadow:0 0 0 3px var(--accent-soft);
 }
 
-/* Syntax Colors */
+/* Scrollbars */
+.editor textarea::-webkit-scrollbar,
+.editor .highlight::-webkit-scrollbar{
+    width:8px;
+    height:8px;
+}
+
+.editor textarea::-webkit-scrollbar-thumb,
+.editor .highlight::-webkit-scrollbar-thumb{
+    background:#2a3142;
+    border-radius:8px;
+}
+
+/* =========================
+   SYNTAX COLORS
+========================= */
+
 .token-tag{ color:#5aa2ff; }
 .token-bracket{ color:#ff7edb; }
 .token-attr{ color:#ffd166; }
@@ -273,14 +242,16 @@ button:active{
 .token-template{ color:#ff9f43; }
 .token-error{ background:rgba(255,90,122,0.2); color:#ff5a7a; }
 
-/* Error Panel */
+/* =========================
+   ERROR PANEL
+========================= */
+
 #errorPanel{
     background:#1c2130;
     border:1px solid #252b3a;
     padding:12px;
     border-radius:10px;
     font-size:13px;
-    color:#ff5a7a;
     margin-bottom:20px;
 }
 
