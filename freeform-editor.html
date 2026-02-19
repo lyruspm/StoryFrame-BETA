@@ -67,14 +67,15 @@ label{
 
 .editor{
     position:relative;
-    height:280px;
     margin-bottom:28px;
     border-radius:var(--radius);
     background:var(--bg-panel);
     border:1px solid var(--border);
     box-shadow:var(--shadow);
-    overflow:visible;
+    overflow:hidden;
+    transition:all 0.25s ease;
 }
+
 
 /* =========================
    EDITOR LAYERS
@@ -99,8 +100,7 @@ label{
     tab-size:4;
 
     white-space:pre;
-    overflow-wrap:normal;
-    word-break:normal;
+    overflow:hidden;
 
     box-sizing:border-box;
 }
@@ -126,7 +126,7 @@ label{
     outline:none;
     z-index:2;
 
-    overflow:auto;
+    overflow:hidden;
     
     display:block;
 }
@@ -279,7 +279,7 @@ button{
 
 #previewRoot{
     flex:1;
-    overflow:auto;
+    overflow:hidden;
     padding:32px;
 }
 
@@ -300,6 +300,45 @@ button{
         height:95%;
     }
 }
+
+/*===============COLLAPSIBLE SECTION=================*/
+
+.section{
+    margin-bottom:30px;
+}
+
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 18px;
+    background:var(--bg-elev);
+    border-radius:var(--radius-sm);
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:1px;
+    cursor:pointer;
+    user-select:none;
+    border:1px solid var(--border);
+}
+
+.section-header:hover{
+    background:#1e2638;
+}
+
+.section-body{
+    margin-top:12px;
+}
+
+.section.collapsed .section-body{
+    display:none;
+}
+
+.toggle{
+    font-size:16px;
+}
+
+
 </style>
 </head>
 
@@ -307,16 +346,30 @@ button{
 
 <h1>Freeform Profile Editor</h1>
 
-<label>HTML Layout</label>
-
-<div class="editor">
-    <pre class="highlight" id="htmlHighlight"></pre>
-    <textarea id="htmlInput" spellcheck="false"></textarea>
+<div class="section">
+    <div class="section-header" data-target="htmlSection">
+        HTML Layout
+        <span class="toggle">−</span>
+    </div>
+    <div class="section-body" id="htmlSection">
+        <div class="editor">
+            <pre class="highlight" id="htmlHighlight"></pre>
+            <textarea id="htmlInput" spellcheck="false"></textarea>
+        </div>
+    </div>
 </div>
 
-<div class="editor">
-    <pre class="highlight" id="cssHighlight"></pre>
-    <textarea id="cssInput" spellcheck="false"></textarea>
+<div class="section">
+    <div class="section-header" data-target="cssSection">
+        CSS Styling
+        <span class="toggle">−</span>
+    </div>
+    <div class="section-body" id="cssSection">
+        <div class="editor">
+            <pre class="highlight" id="cssHighlight"></pre>
+            <textarea id="cssInput" spellcheck="false"></textarea>
+        </div>
+    </div>
 </div>
 
 <div id="errorPanel"></div>
@@ -623,32 +676,46 @@ function updateEditors(){
 }
 
 /* =========================
-   PERFECT SCROLL SYNC (FIXED)
+   AUTO EXPAND
 ========================= */
 
-function bindScrollSync(input, highlight){
+function autoResize(textarea, highlight){
+    textarea.style.height = "auto";
+    highlight.style.height = "auto";
 
-    input.addEventListener("scroll", ()=>{
-        highlight.scrollTop = input.scrollTop;
-        highlight.scrollLeft = input.scrollLeft;
-    });
+    const newHeight = textarea.scrollHeight + "px";
 
-    // Force sync after input too
-    input.addEventListener("input", ()=>{
-        highlight.scrollTop = input.scrollTop;
-        highlight.scrollLeft = input.scrollLeft;
-    });
+    textarea.style.height = newHeight;
+    highlight.style.height = newHeight;
 }
 
-bindScrollSync(htmlInput, htmlHighlight);
-bindScrollSync(cssInput, cssHighlight);
+function bindAutoResize(input, highlight){
+    input.addEventListener("input", ()=>{
+        autoResize(input, highlight);
+    });
 
-htmlInput.addEventListener("input", updateEditors);
-cssInput.addEventListener("input", updateEditors);
+    // initial resize
+    autoResize(input, highlight);
+}
 
+bindAutoResize(htmlInput, htmlHighlight);
+bindAutoResize(cssInput, cssHighlight);
 
-updateEditors();
+/* =========================
+   COLLAPSE SECTIONS
+========================= */
 
+document.querySelectorAll(".section-header").forEach(header=>{
+    header.addEventListener("click", ()=>{
+        const section = header.parentElement;
+        const toggle = header.querySelector(".toggle");
+
+        section.classList.toggle("collapsed");
+
+        toggle.textContent =
+            section.classList.contains("collapsed") ? "+" : "−";
+    });
+});
 
 </script>
 
