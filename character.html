@@ -495,8 +495,8 @@ function createCard(char){
     <div class="radial-menu">
         <button class="radial-item edit" title="Edit">✒</button>
         <button class="radial-item view" title="View">✦</button>
-        <button class="radial-item freeform" title="Freeform">▶</button>
-        <button class="radial-item freeform-edit" title="Freeform Edit">➜</button>
+        <button class="radial-item freeform-viewer" title="Freeform">▼</button>
+        <button class="radial-item freeform-edit" title="Freeform Edit">▶</button>
     </div>
 </div>
 </div>
@@ -542,6 +542,12 @@ card.querySelector(".freeform-edit").addEventListener("click", (e)=>{
     e.stopPropagation();
     localStorage.setItem("editingCharacterId", char.id);
     window.location.href = "freeform-editor.html";
+});
+/* FREEFORM EDITOR */
+card.querySelector(".freeform-viewer").addEventListener("click", (e)=>{
+    e.stopPropagation();
+    localStorage.setItem("editingCharacterId", char.id);
+    window.location.href = "freeform-viewer.html";
 });
 
 
