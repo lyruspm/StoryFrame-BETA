@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Freeform Viewer</title>
 
-  <!-- Load html2canvas from CDN (small ~60KB gzipped) -->
+  <!-- html2canvas for save to PNG -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
@@ -44,7 +44,6 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* HEADER */
     .viewer-header {
       margin-bottom: 32px;
       text-align: center;
@@ -66,7 +65,6 @@
       opacity: 0.9;
     }
 
-    /* CONTROLS */
     .controls {
       display: flex;
       justify-content: center;
@@ -99,11 +97,6 @@
       box-shadow: 0 12px 30px rgba(122,184,255,0.4);
     }
 
-    .btn-primary:active {
-      transform: translateY(0);
-    }
-
-    /* PANEL */
     .viewer-container {
       background: var(--bg-panel);
       border-radius: var(--radius);
@@ -116,7 +109,6 @@
       flex-direction: column;
     }
 
-    /* IFRAME */
     .viewer-frame {
       width: 100%;
       flex: 1;
@@ -173,9 +165,7 @@
   </div>
 
   <div class="controls">
-    <button class="btn btn-primary" id="savePngBtn">
-      ⬇ Save as PNG
-    </button>
+    <button class="btn btn-primary" id="savePngBtn">⬇ Save as PNG</button>
   </div>
 
   <div class="viewer-container" id="viewerContainer">
@@ -186,7 +176,7 @@
   </div>
 
   <script>
-    // ── GET ID ──
+    // ── GET CHARACTER ID ──
     function getCharacterId() {
       const params = new URLSearchParams(window.location.search);
       const queryId = params.get("id");
@@ -212,91 +202,126 @@
       errorBox.classList.remove("hidden");
       errorMessage.textContent = msg;
       viewerContainer.appendChild(errorBox);
-      savePngBtn.disabled = true;
+      if (savePngBtn) savePngBtn.disabled = true;
     }
 
-    if (!characterId) return showError("No character ID provided.");
-    if (!char)        return showError("Character not found.");
+    if (!characterId) {
+      showError("No character ID provided.");
+    } else if (!char) {
+      showError("Character not found in storage.");
+    } else {
+      // ── SANITIZER (blocks script tags, dangerous elements) ──
+      function sanitizeHTML(input) {
+        if (!input) return "";
 
-    // ── SANITIZERS (kept strict) ──
-    function sanitizeHTML(input) {
-      if (!input) return "";
-      return input
-        .replace(/<script[\s\S]*?<\/script>/gi, "")
-        .replace(/<(iframe|object|embed|svg|math|link|meta|base|form|input|button|textarea)[\s\S]*?<\/\1>/gi, "")
-        .replace(/<(iframe|object|embed|svg|math|link|meta|base|form|input|button|textarea)[^>]*>/gi, "")
-        .replace(/\son\w+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, "")
-        .replace(/javascript:/gi, "")
-        .replace(/data:text\/html/gi, "");
-    }
+        // Remove script blocks completely
+        input = input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
 
-    function sanitizeCSS(input) {
-      if (!input) return "";
-      return input
-        .replace(/@import[^;]+;/gi, "")
-        .replace(/expression\s*\([^)]*\)/gi, "")
-        .replace(/url\(\s*javascript:[^)]+\)/gi, "")
-        .replace(/behavior\s*:/gi, "");
-    }
+        // Remove dangerous tags that could be used for exploits
+        const dangerous = 'iframe|object|embed|frame|frameset|applet|meta|base|form|input|button|textarea|style|link|svg|math|noscript';
+        const dangerousRegex = new RegExp(`<(${dangerous})\\b[^>]*>([\\s\\S]*?)</\\1>`, 'gi');
+        input = input.replace(dangerousRegex, '');
 
-    // ── TEMPLATE ──
-    function applyTemplate(html) {
-      const replacements = {
-        "{{name}}":   char.name  || "",
-        "{{desc}}":   char.desc  || "",
-        "{{tags}}":   char.tags  || "",
-        "{{folder}}": char.folder|| "",
-        "{{image}}":  char.image || ""
-      };
-      Object.entries(replacements).forEach(([k,v]) => {
-        html = html.split(k).join(v);
-      });
-      return html;
-    }
+        const dangerousOpen = new RegExp(`<(${dangerous})\\b[^>]*>`, 'gi');
+        input = input.replace(dangerousOpen, '');
 
-    // ── FALLBACK ──
-    function buildFallbackHTML() {
-      return `
-        <div style="max-width:900px; margin:0 auto; padding:20px;">
-          ${char.image ? `<img src="${char.image}" style="width:220px;height:220px;border-radius:50%;object-fit:cover;margin:0 auto 30px;display:block;box-shadow:0 10px 40px rgba(0,0,0,0.5);">` : ""}
-          <h1 style="text-align:center; margin-bottom:20px;">${char.name || "Unnamed Character"}</h1>
-          <p style="font-size:1.15rem; opacity:0.92;">${char.desc || "No description available."}</p>
-          <hr style="border-color:#2a334a; margin:30px 0;">
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; opacity:0.9;">
-            <div><b>Species:</b> ${char.species || "—"}</div>
-            <div><b>Faction:</b> ${char.faction || "—"}</div>
-            <div><b>Alignment:</b> ${char.alignment || "—"}</div>
-            <div><b>Status:</b> ${char.status || "—"}</div>
-            <div><b>Age:</b> ${char.age || "—"}</div>
+        // Strip all event handlers
+        input = input.replace(/\son\w+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, "");
+
+        // Block dangerous protocol schemes
+        input = input.replace(/javascript:/gi, 'javascript-blocked:');
+        input = input.replace(/data:/gi, 'data-blocked:');
+        input = input.replace(/vbscript:/gi, 'vbscript-blocked:');
+
+        return input.trim();
+      }
+
+      function sanitizeCSS(input) {
+        if (!input) return "";
+        return input
+          .replace(/@import[^;]+;/gi, "")
+          .replace(/expression\s*\([^)]*\)/gi, "")
+          .replace(/url\(\s*javascript:[^)]+\)/gi, "")
+          .replace(/behavior\s*:/gi, "")
+          .replace(/@charset[^;]+;/gi, "");
+      }
+
+      // ── TEMPLATE REPLACEMENT ──
+      function applyTemplate(html) {
+        const replacements = {
+          "{{name}}":   char.name  || "",
+          "{{desc}}":   char.desc  || "",
+          "{{tags}}":   char.tags  || "",
+          "{{folder}}": char.folder|| "",
+          "{{image}}":  char.image || ""
+        };
+        Object.entries(replacements).forEach(([key, value]) => {
+          html = html.split(key).join(value);
+        });
+        return html;
+      }
+
+      // ── FALLBACK CONTENT ──
+      function buildFallbackHTML() {
+        return `
+          <div style="max-width:900px; margin:0 auto; padding:20px; text-align:center;">
+            ${char.image ? `<img src="${char.image}" style="width:220px;height:220px;border-radius:50%;object-fit:cover;margin:0 auto 30px;display:block;box-shadow:0 10px 40px rgba(0,0,0,0.5);">` : ""}
+            <h1>${char.name || "Unnamed Character"}</h1>
+            <p style="font-size:1.15rem; opacity:0.92;">${char.desc || "No description available."}</p>
+            <hr style="border-color:#2a334a; margin:30px 0;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; opacity:0.9;">
+              <div><b>Species:</b> ${char.species || "—"}</div>
+              <div><b>Faction:</b> ${char.faction || "—"}</div>
+              <div><b>Alignment:</b> ${char.alignment || "—"}</div>
+              <div><b>Status:</b> ${char.status || "—"}</div>
+              <div><b>Age:</b> ${char.age || "—"}</div>
+            </div>
           </div>
-        </div>
-      `;
-    }
+        `;
+      }
 
-    // ── RENDER ──
-    viewerTitle.textContent = char.name || "Unnamed Character";
-    viewerMeta.textContent  = `Last updated: ${char.updatedAt ? new Date(char.updatedAt).toLocaleString([], {dateStyle:"medium", timeStyle:"short"}) : "Unknown"}`;
+      viewerTitle.textContent = char.name || "Unnamed Character";
+      viewerMeta.textContent  = `Last updated: ${char.updatedAt ? new Date(char.updatedAt).toLocaleString([], {dateStyle:"medium", timeStyle:"short"}) : "Unknown"}`;
 
-    const safeHTML = char.freeform?.html ? sanitizeHTML(applyTemplate(char.freeform.html)) : buildFallbackHTML();
-    const safeCSS  = char.freeform?.css  ? sanitizeCSS(char.freeform.css) : "";
+      let safeHTML = "";
+      if (char.freeform && 'html' in char.freeform) {
+        safeHTML = sanitizeHTML(applyTemplate(char.freeform.html));
+      } else {
+        safeHTML = buildFallbackHTML();
+      }
 
-    const iframe = document.createElement("iframe");
-    iframe.className = "viewer-frame";
-    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups allow-forms"); 
-    iframe.srcdoc = `
+      const safeCSS = char.freeform?.css ? sanitizeCSS(char.freeform.css) : "";
+
+      const iframe = document.createElement("iframe");
+      iframe.className = "viewer-frame";
+
+      // ── MAXIMUM RESTRICTIONS: no scripts, no same-origin, no popups, no forms ──
+      iframe.setAttribute("sandbox", "");
+
+      iframe.srcdoc = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'none';
-    style-src 'unsafe-inline' 'self' https: data:;
+    style-src 'unsafe-inline';
     img-src https: data: blob:;
     font-src https: data:;
     media-src https: blob:;
+    object-src 'none';
+    child-src 'none';
+    frame-src 'none';
+    connect-src 'none';
+    base-uri 'none';
   ">
   <style>
-    html, body { height:100%; margin:0; padding:0; overflow-x:hidden; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
     body {
       background: #0f141e;
       color: #f0f4ff;
@@ -307,49 +332,53 @@
       -webkit-font-smoothing: antialiased;
     }
     h1, h2, h3 { line-height: 1.3; }
-    img { max-width:100%; height:auto; }
-    pre, code { background:#1a2235; padding:0.2em 0.4em; border-radius:6px; }
-    pre { padding:1.2em; overflow:auto; }
+    img { max-width: 100%; height: auto; border-radius: 8px; }
+    pre, code {
+      background: #1a2235;
+      padding: 0.2em 0.4em;
+      border-radius: 6px;
+      font-family: Consolas, monospace;
+    }
+    pre { padding: 1.2em; overflow: auto; }
+    a { color: #8ab8ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
     ${safeCSS}
   </style>
 </head>
 <body>
-${safeHTML}
+${safeHTML || '<p style="text-align:center; opacity:0.7; padding:60px 20px;">(No custom content defined yet)</p>'}
 </body>
 </html>`;
 
-    viewerContainer.appendChild(iframe);
+      viewerContainer.appendChild(iframe);
 
-    // ── SAVE AS PNG ──
-    savePngBtn.onclick = async () => {
-      if (savePngBtn.disabled) return;
+      // ── SAVE AS PNG (still works because html2canvas captures the rendered result) ──
+      savePngBtn.onclick = async () => {
+        savePngBtn.textContent = "Capturing...";
+        savePngBtn.disabled = true;
 
-      savePngBtn.textContent = "Capturing...";
-      savePngBtn.disabled = true;
+        try {
+          const canvas = await html2canvas(iframe, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: null,
+            logging: false
+          });
 
-      try {
-        const canvas = await html2canvas(iframe, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: null,
-          logging: false
-        });
+          const link = document.createElement("a");
+          link.download = `${char.name?.replace(/\W+/g,'-') || "character"}-freeform.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        } catch (err) {
+          console.error("Capture failed:", err);
+          alert("Could not capture image.\n\nCheck console (F12) for details.");
+        }
 
-        const link = document.createElement("a");
-        link.download = `${char.name || "character"}-freeform.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-
-      } catch (err) {
-        console.error("Capture failed:", err);
-        alert("Could not capture image. Try refreshing or check console.");
-      }
-
-      savePngBtn.textContent = "Save as PNG";
-      savePngBtn.disabled = false;
-    };
-
+        savePngBtn.textContent = "⬇ Save as PNG";
+        savePngBtn.disabled = false;
+      };
+    }
   </script>
 </body>
 </html>
