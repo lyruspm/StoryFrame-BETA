@@ -183,38 +183,13 @@
       background: var(--accent);
       color: white;
     }
-    
-    /* ======== Fix radial menu being covered ======== */
 
-.card {
-  position: relative;
-  z-index: 1;                    
-  overflow: visible !important;
-}
-
-.radial-container {
-  z-index: 10;
-}
-
-.radial-menu {
-  z-index: 20;
-}
-
-.radial-item {
-  z-index: 25;
-
-}
-
-.section {
-  position: relative;
-  z-index: 0;                    /* keep sections below cards */
-}
-
+    /* ── Radial Menu (now automatic!) ── */
 /* ── Radial Menu (left-side fan / half-circle) ── */
 :root {
-  --radial-distance: 74px;
-  --fan-start: 100deg;
-  --fan-span: 160deg;
+  --radial-distance: 74px;     /* distance from center – feel free to tweak */
+  --fan-start: 100deg;         /* start angle (from positive x-axis) – 90deg = straight up */
+  --fan-span: 160deg;          /* total arc → 180deg = perfect half, 140-170deg feels natural */
 }
 
 .radial-container {
@@ -222,7 +197,6 @@
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-  z-index: 10;
 }
 
 .radial-main {
@@ -250,7 +224,6 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 20;
 }
 
 .radial-item {
@@ -272,7 +245,6 @@
   transform: scale(0.7) translate(0, 0);
   pointer-events: none;
   box-shadow: 0 3px 12px rgba(0,0,0,0.4);
-  z-index: 25;
 }
 
 .radial-item:hover {
@@ -282,20 +254,20 @@
 }
 
 /* Active state */
-.radial-container.active .radial-menu,
-.radial-container.active .radial-item {
+.radial-container.active .radial-menu {
   pointer-events: auto;
 }
 
 .radial-container.active .radial-item {
   opacity: 1;
   transform: scale(1) translate(var(--tx), var(--ty));
+  pointer-events: auto;
 }
 
-/* Automatic positioning */
+/* ── Automatic left-fan positioning ── */
 .radial-item {
-  --total: 4;
-  --index: calc(var(--i) - 1);
+  --total: 4;                      /* ← update this when you add/remove items */
+  --index: calc(var(--i) - 1);     /* 0-based */
   --angle-step: calc(var(--fan-span) / (var(--total) - 1));
   --angle: calc(var(--fan-start) + var(--index) * var(--angle-step));
 
@@ -305,13 +277,14 @@
   transform: translate(var(--tx), var(--ty)) rotate(calc(-1 * var(--angle)));
 }
 
-/* Index assignment */
+/* Auto-assign --i via :nth-child (add more lines if you ever go >8 items) */
 .radial-item:nth-child(1) { --i: 1; }
 .radial-item:nth-child(2) { --i: 2; }
 .radial-item:nth-child(3) { --i: 3; }
 .radial-item:nth-child(4) { --i: 4; }
-
- /* ── Bottom Nav ── */
+.radial-item:nth-child(5) { --i: 5; }
+.radial-item:nth-child(6) { --i: 6; }
+    /* ── Bottom Nav ── */
     .bottom-nav {
       position: fixed;
       bottom: 0;
