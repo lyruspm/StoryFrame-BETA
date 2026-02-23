@@ -35,6 +35,10 @@
       background:
         radial-gradient(circle at 15% 5%, rgba(122,184,255,0.11), transparent 45%),
         linear-gradient(135deg, #0a0e17 0%, #0d1421 100%);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
       color: var(--text-main);
       font-family: 'Inter', system-ui, sans-serif;
       min-height: 100vh;
@@ -45,8 +49,9 @@
     }
 
     .viewer-header {
-      margin-bottom: 32px;
+      margin-bottom: 0px;
       text-align: center;
+      padding: 0 24px;
     }
 
     .viewer-title {
@@ -69,7 +74,7 @@
       display: flex;
       justify-content: center;
       gap: 16px;
-      margin: 24px 0 32px;
+      margin: 24px 0;
       flex-wrap: wrap;
     }
 
@@ -97,21 +102,9 @@
       box-shadow: 0 12px 30px rgba(122,184,255,0.4);
     }
 
-    .viewer-container {
-      background: var(--bg-panel);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      position: relative;
-      min-height: 500px;
-      display: flex;
-      flex-direction: column;
-    }
-
     .viewer-frame {
       width: 100%;
-      flex: 1;
+      height: 100vh;
       border: none;
       display: block;
       background: #0f141e;
