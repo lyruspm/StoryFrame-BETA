@@ -111,17 +111,17 @@
     }
 
     .viewer-frame::-webkit-scrollbar {
-      width: 10px;
+      width: 0;
+      height: 0;
     }
 
     .viewer-frame::-webkit-scrollbar-track {
-      background: #0c101a;
+      background: transparent;
     }
 
     .viewer-frame::-webkit-scrollbar-thumb {
-      background: #3a4a6a;
-      border-radius: 5px;
-      border: 2px solid #0c101a;
+      background: #transparent;
+   
     }
 
     .error-box {
@@ -148,6 +148,14 @@
       body { padding: 20px 16px; }
       .viewer-title { font-size: 2rem; }
     }
+
+    ::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+    html {
+      scrollbar-width: none;
+      
   </style>
 </head>
 <body>
@@ -168,8 +176,11 @@
     </div>
   </div>
 
+
+
   <script>
-    // ── GET CHARACTER ID ──
+     // ── JAVA SCRIPT ── //
+    // ── GET CHARACTER ID ──//
     function getCharacterId() {
       const params = new URLSearchParams(window.location.search);
       const queryId = params.get("id");
@@ -203,14 +214,14 @@
     } else if (!char) {
       showError("Character not found in storage.");
     } else {
-      // ── SANITIZER (blocks script tags, dangerous elements) ──
+      // ── SANITIZER  ──//
       function sanitizeHTML(input) {
         if (!input) return "";
 
-        // Remove script blocks completely
+        // Remove script blocks completely//
         input = input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
 
-        // Remove dangerous tags that could be used for exploits
+        // Remove dangerous tags that could be used for exploits//
         const dangerous = 'iframe|object|embed|frame|frameset|applet|meta|base|form|input|button|textarea|style|link|svg|math|noscript';
         const dangerousRegex = new RegExp(`<(${dangerous})\\b[^>]*>([\\s\\S]*?)</\\1>`, 'gi');
         input = input.replace(dangerousRegex, '');
@@ -218,10 +229,10 @@
         const dangerousOpen = new RegExp(`<(${dangerous})\\b[^>]*>`, 'gi');
         input = input.replace(dangerousOpen, '');
 
-        // Strip all event handlers
+        // Strip all event handlers//
         input = input.replace(/\son\w+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, "");
 
-        // Block dangerous protocol schemes
+        // Block dangerous protocol schemes//
         input = input.replace(/javascript:/gi, 'javascript-blocked:');
         input = input.replace(/data:/gi, 'data-blocked:');
         input = input.replace(/vbscript:/gi, 'vbscript-blocked:');
@@ -254,7 +265,7 @@
         return html;
       }
 
-      // ── FALLBACK CONTENT ──
+      // ── FALLBACK CONTENT ──//
       function buildFallbackHTML() {
         return `
           <div style="max-width:900px; margin:0 auto; padding:20px; text-align:center;">
@@ -288,7 +299,7 @@
       const iframe = document.createElement("iframe");
       iframe.className = "viewer-frame";
 
-      // ── MAXIMUM RESTRICTIONS: no scripts, no same-origin, no popups, no forms ──
+      // ── MAXIMUM RESTRICTIONS: no scripts, no same-origin, no popups, no forms ──//
       iframe.setAttribute("sandbox", "");
 
       iframe.srcdoc = `
@@ -357,17 +368,17 @@ savePngBtn.onclick = async () => {
     await new Promise(resolve => setTimeout(resolve, 400));
 
     const canvas = await html2canvas(iframe, {
-      scale: window.devicePixelRatio > 1 ? 2 : 3,   // better quality on retina/high-dpi
-      useCORS: true,                                // attempt to load external images
-      allowTaint: true,                             // allow tainted canvas if needed
-      backgroundColor: null,                        // preserve transparency if any
-      logging: false,                               // reduce console noise
-      windowWidth: iframe.offsetWidth,              // match actual size
+      scale: window.devicePixelRatio > 1 ? 2 : 3,  
+      useCORS: true,                               
+      allowTaint: true,                   
+      backgroundColor: null,                 
+      logging: false,                   
+      windowWidth: iframe.offsetWidth,            
       windowHeight: iframe.offsetHeight,
       x: 0,
       y: 0,
       scrollX: 0,
-      scrollY: -iframe.contentWindow?.scrollY || 0  // try to capture scrolled content
+      scrollY: -iframe.contentWindow?.scrollY || 0  
     });
 
     // Optional: add timestamp to filename to avoid overwrites
@@ -379,7 +390,7 @@ savePngBtn.onclick = async () => {
 
     const link = document.createElement("a");
     link.download = `${safeName}-freeform-${timestamp}.png`;
-    link.href = canvas.toDataURL("image/png", 0.98);  // slight quality compression
+    link.href = canvas.toDataURL("image/png", 0.98);  
     link.click();
 
     // Optional success feedback
