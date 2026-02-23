@@ -258,7 +258,7 @@ canvas{
     <button type="button" id="useImageBtn">Use Image</button>
 </div>
 
-<button type="button" id="freeformBtn" class="btn hidden">
+<button type="button" id="freeformBtn">
     Freeform Edit
 </button>
 
@@ -676,15 +676,10 @@ renderRelationships();
 const freeformBtn = document.getElementById("freeformBtn");
 
 freeformBtn.addEventListener("click", ()=>{
-
-    if(!char){
-        alert("You must save the character before using Freeform Edit.");
-        return;
-    }
-
-    localStorage.setItem("editingCharacterId", char.id);
-
-    window.location.href = "freeform-editor.html";
+   
+ localStorage.setItem("editingCharacterId", char.id);
+window.location.href = "freeform-editor.html";
+   
 });
 
 
