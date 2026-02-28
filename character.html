@@ -336,6 +336,27 @@
     .fab:active {
       transform: rotate(90deg) scale(0.92);
     }
+
+/*========= TRANSFER ==============*/
+
+.transfer-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--bg-accent);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.transfer-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+    
+    
   </style>
 </head>
 <body>
@@ -343,6 +364,9 @@
   <header>
     <h1>Characters</h1>
     <input id="searchInput" type="text" placeholder="Search Characters or #Tags">
+
+<a href="transfer.html" class="transfer-btn">Data Transfer</a>
+    
   </header>
 
   <div class="folder-bar" id="folderBar"></div>
@@ -366,8 +390,7 @@
     <a href="events.html"    class="nav-btn">Events</a>
     <a href="character.html" class="nav-btn">Characters</a>
     <a href="world.html"     class="nav-btn">World</a>
-    <a href="items.html"     class="nav-btn">Items</a>
-    <a href="transfer.html"  class="nav-btn">Data Transfer</a>
+    <a href="items.html"     class="nav-btn">Items</a
   </nav>
 
   <!-- Floating Action Button -->
