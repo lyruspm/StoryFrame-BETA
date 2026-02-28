@@ -474,9 +474,18 @@
       const mainBtn = card.querySelector(".radial-main");
 
       mainBtn.onclick = (e) => {
-        e.stopPropagation();
-        radialContainer.classList.toggle("active");
-      };
+  e.stopPropagation();
+
+  const isAlreadyOpen = radialContainer.classList.contains("active");
+
+  // Close ALL open radials first logic
+  document.querySelectorAll(".radial-container.active")
+    .forEach(el => el.classList.remove("active"));
+
+  if (!isAlreadyOpen) {
+    radialContainer.classList.add("active");
+  }
+};
 
       // Action buttons
       const actions = {
