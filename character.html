@@ -184,12 +184,11 @@
       color: white;
     }
 
-    /* ---- Radial Menu ----*/
-    
+    /* ── Radial Menu ── */
 :root {
-  --radial-distance: 74px; 
-  --fan-start: 100deg;  
-  --fan-span: 160deg;
+  --radial-distance: 74px;     
+  --fan-start: 100deg;      
+  --fan-span: 160deg;   
 }
 
 .radial-container {
@@ -268,7 +267,7 @@
 /* ── Automatic left-fan positioning ── */
 .radial-item {
   --total: 4;                      
-  --index: calc(var(--i) - 1); 
+  --index: calc(var(--i) - 1);     
   --angle-step: calc(var(--fan-span) / (var(--total) - 1));
   --angle: calc(var(--fan-start) + var(--index) * var(--angle-step));
 
@@ -278,14 +277,13 @@
   transform: translate(var(--tx), var(--ty)) rotate(calc(-1 * var(--angle)));
 }
 
-
+/* Auto-assign --i via :nth-child (add more lines if you ever go >8 items) */
 .radial-item:nth-child(1) { --i: 1; }
 .radial-item:nth-child(2) { --i: 2; }
 .radial-item:nth-child(3) { --i: 3; }
 .radial-item:nth-child(4) { --i: 4; }
 .radial-item:nth-child(5) { --i: 5; }
 .radial-item:nth-child(6) { --i: 6; } { --i: 6; }
-    
     /* ── Bottom Nav ── */
     .bottom-nav {
       position: fixed;
@@ -313,7 +311,6 @@
     }
 
     /* ── FAB ── */
-    
     .fab {
       position: fixed;
       bottom: 90px;
@@ -336,27 +333,30 @@
     .fab:active {
       transform: rotate(90deg) scale(0.92);
     }
-
-/*========= TRANSFER ==============*/
-
-.transfer-btn {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 8px 14px;
-  border-radius: 999px;
+    
+  .fab-secondary {
+  position: fixed;
+  bottom: 160px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   background: var(--bg-accent);
   color: var(--text-muted);
+  font-size: 20px;
+  display: grid;
+  place-items: center;
   text-decoration: none;
-  font-size: 13px;
-  transition: 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  transition: 0.2s;
+  z-index: 2100;
 }
 
-.transfer-btn:hover {
+.fab-secondary:hover {
   background: var(--accent);
   color: white;
 }
-    
-    
+
   </style>
 </head>
 <body>
@@ -364,10 +364,9 @@
   <header>
     <h1>Characters</h1>
     <input id="searchInput" type="text" placeholder="Search Characters or #Tags">
-
-<a href="transfer.html" class="transfer-btn">Data Transfer</a>
     
   </header>
+    
 
   <div class="folder-bar" id="folderBar"></div>
 
@@ -380,21 +379,21 @@
     <div id="characterList"></div>
   </section>
   
+  <a href="transfer.html" class="fab-secondary">⇄</a>
+  
   <nav class="bottom-nav">...</nav>
   <a href="add-character.html" class="fab" id="fabBtn">+</a>
 
   <!-- Bottom Navigation -->
-  
   <nav class="bottom-nav">
     <a href="index.html"     class="nav-btn active">Home</a>
     <a href="events.html"    class="nav-btn">Events</a>
     <a href="character.html" class="nav-btn">Characters</a>
     <a href="world.html"     class="nav-btn">World</a>
-    <a href="items.html"     class="nav-btn">Items</a
+    <a href="#"              class="nav-btn">Folders</a>
   </nav>
 
   <!-- Floating Action Button -->
-  
   <a href="add-character.html" class="fab" id="fabBtn">+</a>
 
   <script>
@@ -579,7 +578,6 @@
 
     searchInput.oninput = applyFilters;
 
-    // Close all radial menus when clicking outside
     
     document.addEventListener("click", e => {
       if (!e.target.closest(".radial-container")) {
@@ -588,8 +586,6 @@
       }
     });
 
-    // Refresh on focus
-    
     window.onfocus = () => {
       loadCharacters();
       buildFolderBar();
