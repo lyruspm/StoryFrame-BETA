@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Transfer - World Builder</title>
+
+<style>
+:root{
+  --bg:#0f1117;
+  --card:#1a1d26;
+  --accent:#5aa2ff;
+  --text:#e6e9ef;
+  --muted:#9aa3b2;
+  --radius:14px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.container{
+  width:100%;
+  max-width:600px;
+  background:var(--card);
+  padding:28px;
+  border-radius:var(--radius);
+  border:1px solid #2a2f3d;
+}
+
+h1{
+  margin-bottom:20px;
+}
+
+.section{
+  margin-bottom:30px;
+}
+
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:var(--radius);
+  background:var(--accent);
+  color:white;
+  cursor:pointer;
+  font-size:14px;
+}
+
+button.secondary{
+  background:#2a2f3d;
+}
+
+.status{
+  margin-top:12px;
+  font-size:14px;
+  color:var(--muted);
+  white-space:pre-line;
+}
+
+.footer{
+  margin-top:20px;
+  font-size:12px;
+  color:var(--muted);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Data Transfer</h1>
+
+  <div class="section">
+    <h3>Export Backup</h3>
+    <p class="footer">Exports characters and folders into a single JSON file.</p>
+    <button id="exportBtn">Download Backup</button>
+  </div>
+
+  <div class="section">
+    <h3>Import Backup</h3>
+    <p class="footer">Merges characters. Existing IDs are updated. New ones are added.</p>
+    <button id="importBtn" class="secondary">Import JSON File</button>
+    <input type="file" id="importFile" accept=".json" style="display:none;">
+    <div id="status" class="status"></div>
+  </div>
+
+  <div class="footer">
+    Storage used: <span id="storageInfo"></span>
+  </div>
+</div>
+
+<script>
+const exportBtn = document.getElementById("exportBtn");
+const importBtn = document.getElementById("importBtn");
+const importFile = document.getElementById("importFile");
+const statusDiv = document.getElementById("status");
+const storageInfo = document.getElementById("storageInfo");
+
+/* STORAGE INFO */
+function updateStorageInfo(){
+  const data = localStorage.getItem("characters") || "";
+  const sizeKB = (new Blob([data]).size / 1024).toFixed(2);
+  storageInfo.textContent = sizeKB + " KB (characters only)";
+}
+updateStorageInfo();
+
+/* EXPORT */
+exportBtn.onclick = () => {
+
+  const exportData = {
+    app: "WorldBuilder",
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    data: {
+      characters: JSON.parse(localStorage.getItem("characters")) || [],
+      folders: JSON.parse(localStorage.getItem("folders")) || []
+    }
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `worldbuilder-backup-${Date.now()}.json`;
+  a.click();
+};
+
+/* IMPORT (SMART MERGE) */
+importBtn.onclick = () => importFile.click();
+
+importFile.onchange = async (e) => {
+
+  const file = e.target.files[0];
+  if(!file) return;
+
+  try{
+    const text = await file.text();
+    const json = JSON.parse(text);
+
+    if(!json.data || !Array.isArray(json.data.characters)){
+      statusDiv.textContent = "Invalid file format.";
+      return;
+    }
+
+    let existingChars = JSON.parse(localStorage.getItem("characters")) || [];
+    let existingFolders = JSON.parse(localStorage.getItem("folders")) || [];
+
+    let added = 0;
+    let updated = 0;
+
+    json.data.characters.forEach(newChar => {
+
+      if(!newChar.id){
+        newChar.id = crypto.randomUUID();
+      }
+
+      const index = existingChars.findIndex(c => c.id === newChar.id);
+
+      if(index !== -1){
+        existingChars[index] = newChar;
+        updated++;
+      } else {
+        existingChars.push(newChar);
+        added++;
+      }
+    });
+
+    const mergedFolders = new Set([
+      ...existingFolders,
+      ...(json.data.folders || [])
+    ]);
+
+    localStorage.setItem("characters", JSON.stringify(existingChars));
+    localStorage.setItem("folders", JSON.stringify([...mergedFolders]));
+
+    statusDiv.textContent =
+      `Import Complete\nAdded: ${added}\nUpdated: ${updated}`;
+
+    updateStorageInfo();
+
+  } catch(err){
+    console.error(err);
+    statusDiv.textContent = "Import failed. File may be corrupted.";
+  }
+
+  importFile.value = "";
+};
+</script>
+
+</body>
+</html>
