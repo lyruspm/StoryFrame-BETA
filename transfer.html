@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Transfer - World Builder</title>
+<title>Selective Transfer - World Builder</title>
 
 <style>
 :root{
@@ -22,175 +22,215 @@ body{
   color:var(--text);
   min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
   padding:20px;
 }
 
 .container{
   width:100%;
-  max-width:600px;
+  max-width:700px;
   background:var(--card);
   padding:28px;
   border-radius:var(--radius);
   border:1px solid #2a2f3d;
 }
 
-h1{
-  margin-bottom:20px;
+h1{margin-bottom:20px;}
+.section{margin-bottom:30px;}
+
+input, textarea{
+  width:100%;
+  padding:10px;
+  border-radius:var(--radius);
+  border:none;
+  margin-top:8px;
+  background:#232734;
+  color:white;
 }
 
-.section{
-  margin-bottom:30px;
+textarea{
+  min-height:140px;
+  font-family:monospace;
+  resize:vertical;
 }
 
 button{
-  padding:12px 18px;
+  margin-top:12px;
+  padding:10px 16px;
   border:none;
   border-radius:var(--radius);
   background:var(--accent);
   color:white;
   cursor:pointer;
-  font-size:14px;
-}
-
-button.secondary{
-  background:#2a2f3d;
 }
 
 .status{
-  margin-top:12px;
+  margin-top:10px;
   font-size:14px;
   color:var(--muted);
   white-space:pre-line;
-}
-
-.footer{
-  margin-top:20px;
-  font-size:12px;
-  color:var(--muted);
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Data Transfer</h1>
+  <h1>Selective Character Transfer</h1>
 
+  <!-- EXPORT BY ID -->
   <div class="section">
-    <h3>Export Backup</h3>
-    <p class="footer">Exports characters and folders into a single JSON file.</p>
-    <button id="exportBtn">Download Backup</button>
+    <h3>Export Character by ID</h3>
+    <input id="exportId" placeholder="Enter Character ID">
+    <button onclick="exportById()">Export This Character</button>
   </div>
 
+  <!-- IMPORT FROM FILE BY ID -->
   <div class="section">
-    <h3>Import Backup</h3>
-    <p class="footer">Merges characters. Existing IDs are updated. New ones are added.</p>
-    <button id="importBtn" class="secondary">Import JSON File</button>
-    <input type="file" id="importFile" accept=".json" style="display:none;">
-    <div id="status" class="status"></div>
+    <h3>Import Character From File (Select ID)</h3>
+    <input type="file" id="fileInput" accept=".json">
+    <input id="importId" placeholder="ID to import from file">
+    <button onclick="importFromFile()">Import This Character</button>
   </div>
 
-  <div class="footer">
-    Storage used: <span id="storageInfo"></span>
+  <!-- DIRECT PASTE IMPORT -->
+  <div class="section">
+    <h3>Paste Character JSON</h3>
+    <textarea id="jsonPaste" placeholder="Paste single character JSON here"></textarea>
+    <button onclick="importFromPaste()">Import Pasted Character</button>
   </div>
+
+  <div id="status" class="status"></div>
 </div>
 
 <script>
-const exportBtn = document.getElementById("exportBtn");
-const importBtn = document.getElementById("importBtn");
-const importFile = document.getElementById("importFile");
 const statusDiv = document.getElementById("status");
-const storageInfo = document.getElementById("storageInfo");
 
-/* STORAGE INFO */
-function updateStorageInfo(){
-  const data = localStorage.getItem("characters") || "";
-  const sizeKB = (new Blob([data]).size / 1024).toFixed(2);
-  storageInfo.textContent = sizeKB + " KB (characters only)";
+/* UTIL */
+function getCharacters(){
+  return JSON.parse(localStorage.getItem("characters")) || [];
 }
-updateStorageInfo();
 
-/* EXPORT */
-exportBtn.onclick = () => {
+function saveCharacters(chars){
+  localStorage.setItem("characters", JSON.stringify(chars));
+}
 
-  const exportData = {
-    app: "WorldBuilder",
-    schemaVersion: 1,
-    exportedAt: new Date().toISOString(),
-    data: {
-      characters: JSON.parse(localStorage.getItem("characters")) || [],
-      folders: JSON.parse(localStorage.getItem("folders")) || []
-    }
-  };
+function validateCharacter(obj){
+  if(!obj) return false;
+  if(typeof obj !== "object") return false;
+  if(!obj.id) return false;
+  if(!obj.name) obj.name = "Unnamed";
+  if(!Array.isArray(obj.relationships)) obj.relationships = [];
+  if(!Array.isArray(obj.customFields)) obj.customFields = [];
+  if(!Array.isArray(obj.abilities)) obj.abilities = [];
+  return true;
+}
 
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: "application/json"});
+/* EXPORT BY ID */
+function exportById(){
+  const id = document.getElementById("exportId").value.trim();
+  if(!id) return;
+
+  const chars = getCharacters();
+  const char = chars.find(c => c.id === id);
+
+  if(!char){
+    statusDiv.textContent = "Character not found.";
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(char, null, 2)], {type:"application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `worldbuilder-backup-${Date.now()}.json`;
+  a.download = `character-${id}.json`;
   a.click();
-};
 
-/* IMPORT (SMART MERGE) */
-importBtn.onclick = () => importFile.click();
+  statusDiv.textContent = "Character exported.";
+}
 
-importFile.onchange = async (e) => {
-
-  const file = e.target.files[0];
-  if(!file) return;
+/* IMPORT FROM FILE BY ID */
+async function importFromFile(){
+  const fileInput = document.getElementById("fileInput");
+  const id = document.getElementById("importId").value.trim();
+  if(!fileInput.files[0] || !id) return;
 
   try{
-    const text = await file.text();
+    const text = await fileInput.files[0].text();
     const json = JSON.parse(text);
 
-    if(!json.data || !Array.isArray(json.data.characters)){
-      statusDiv.textContent = "Invalid file format.";
+    let sourceCharacters = [];
+
+    if(Array.isArray(json)){
+      sourceCharacters = json;
+    } else if(json.data && Array.isArray(json.data.characters)){
+      sourceCharacters = json.data.characters;
+    } else if(json.id){
+      sourceCharacters = [json];
+    }
+
+    const found = sourceCharacters.find(c => c.id === id);
+
+    if(!found){
+      statusDiv.textContent = "ID not found in file.";
       return;
     }
 
-    let existingChars = JSON.parse(localStorage.getItem("characters")) || [];
-    let existingFolders = JSON.parse(localStorage.getItem("folders")) || [];
+    if(!validateCharacter(found)){
+      statusDiv.textContent = "Invalid character structure.";
+      return;
+    }
 
-    let added = 0;
-    let updated = 0;
+    let existing = getCharacters();
+    const index = existing.findIndex(c => c.id === id);
 
-    json.data.characters.forEach(newChar => {
+    if(index !== -1){
+      existing[index] = found;
+      statusDiv.textContent = "Character updated.";
+    } else {
+      existing.push(found);
+      statusDiv.textContent = "Character added.";
+    }
 
-      if(!newChar.id){
-        newChar.id = crypto.randomUUID();
-      }
-
-      const index = existingChars.findIndex(c => c.id === newChar.id);
-
-      if(index !== -1){
-        existingChars[index] = newChar;
-        updated++;
-      } else {
-        existingChars.push(newChar);
-        added++;
-      }
-    });
-
-    const mergedFolders = new Set([
-      ...existingFolders,
-      ...(json.data.folders || [])
-    ]);
-
-    localStorage.setItem("characters", JSON.stringify(existingChars));
-    localStorage.setItem("folders", JSON.stringify([...mergedFolders]));
-
-    statusDiv.textContent =
-      `Import Complete\nAdded: ${added}\nUpdated: ${updated}`;
-
-    updateStorageInfo();
+    saveCharacters(existing);
 
   } catch(err){
     console.error(err);
-    statusDiv.textContent = "Import failed. File may be corrupted.";
+    statusDiv.textContent = "Import failed.";
   }
 
-  importFile.value = "";
-};
+  fileInput.value = "";
+}
+
+/* IMPORT FROM PASTE */
+function importFromPaste(){
+  const text = document.getElementById("jsonPaste").value.trim();
+  if(!text) return;
+
+  try{
+    const obj = JSON.parse(text);
+
+    if(!validateCharacter(obj)){
+      statusDiv.textContent = "Invalid character structure.";
+      return;
+    }
+
+    let existing = getCharacters();
+    const index = existing.findIndex(c => c.id === obj.id);
+
+    if(index !== -1){
+      existing[index] = obj;
+      statusDiv.textContent = "Character updated.";
+    } else {
+      existing.push(obj);
+      statusDiv.textContent = "Character added.";
+    }
+
+    saveCharacters(existing);
+
+  } catch(err){
+    console.error(err);
+    statusDiv.textContent = "Invalid JSON.";
+  }
+}
 </script>
 
 </body>
