@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery Viewer</title>
+
+<style>
+:root {
+  --bg-main:#0f1117;
+  --bg-card:#1a1d26;
+  --bg-accent:#232734;
+  --text-main:#e6e9ef;
+  --text-muted:#9aa3b2;
+  --accent:#5aa2ff;
+  --radius:14px;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:system-ui,sans-serif;
+}
+
+body{
+  background:var(--bg-main);
+  color:var(--text-main);
+}
+
+/* HEADER */
+header{
+  padding:16px;
+  background:var(--bg-card);
+  border-bottom:1px solid #2a2f3d;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+h1{
+  font-size:1.2rem;
+}
+
+/* MAIN VIEW */
+.viewer{
+  padding:16px;
+}
+
+.main-image{
+  width:100%;
+  max-height:60vh;
+  object-fit:contain;
+  border-radius:var(--radius);
+  background:#000;
+}
+
+/* NAV BUTTONS */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+}
+
+.nav button{
+  background:var(--bg-accent);
+  border:none;
+  color:white;
+  padding:10px 14px;
+  border-radius:var(--radius);
+  cursor:pointer;
+}
+
+/* THUMBNAILS */
+.thumb-row{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:16px;
+}
+
+.thumb{
+  width:80px;
+  height:80px;
+  border-radius:10px;
+  object-fit:cover;
+  cursor:pointer;
+  opacity:0.6;
+  border:2px solid transparent;
+  transition:0.2s;
+}
+
+.thumb.active{
+  opacity:1;
+  border-color:var(--accent);
+}
+
+.thumb:hover{
+  opacity:1;
+}
+
+.empty{
+  text-align:center;
+  color:var(--text-muted);
+  padding:40px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1 id="title"> Gallery</h1>
+</header>
+
+<div class="viewer">
+  <img id="mainImage" class="main-image">
+
+  <div class="nav">
+    <button id="prevBtn">◀ Prev</button>
+    <button id="nextBtn">Next ▶</button>
+  </div>
+</div>
+
+<div id="thumbRow" class="thumb-row"></div>
+
+<script>
+/* =============================
+   LOAD DATA
+============================= */
+const characters = JSON.parse(localStorage.getItem("characters")) || [];
+const id = localStorage.getItem("viewingCharacterId");
+
+const char = characters.find(c => c.id === id);
+
+const title = document.getElementById("title");
+const mainImage = document.getElementById("mainImage");
+const thumbRow = document.getElementById("thumbRow");
+
+let gallery = char?.gallery || [];
+let currentIndex = 0;
+
+/* =============================
+   INIT
+============================= */
+if(!char){
+  document.body.innerHTML = "<div class='empty'>Character not found.</div>";
+  throw new Error("No character");
+}
+
+title.textContent = char.name + "Gallery";
+
+/* fallback: include avatar if no gallery */
+if(gallery.length === 0 && char.image){
+  gallery = [{ id:"avatar", src:char.image }];
+}
+
+if(gallery.length === 0){
+  document.querySelector(".viewer").innerHTML = `
+    <div class="empty">No images in gallery.</div>
+  `;
+  thumbRow.innerHTML = "";
+  throw new Error("No gallery images");
+}
+
+/* =============================
+   RENDER
+============================= */
+function render(){
+  const current = gallery[currentIndex];
+  if(!current) return;
+
+  mainImage.src = current.src;
+
+  thumbRow.innerHTML = "";
+
+  gallery.forEach((img, i) => {
+    const el = document.createElement("img");
+    el.src = img.src;
+    el.className = "thumb" + (i === currentIndex ? " active" : "");
+
+    el.onclick = () => {
+      currentIndex = i;
+      render();
+    };
+
+    thumbRow.appendChild(el);
+  });
+}
+
+/* =============================
+   NAVIGATION
+============================= */
+document.getElementById("prevBtn").onclick = () => {
+  currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+  render();
+};
+
+document.getElementById("nextBtn").onclick = () => {
+  currentIndex = (currentIndex + 1) % gallery.length;
+  render();
+};
+
+/* =============================
+   SWIPE (mobile)
+============================= */
+let startX = 0;
+
+mainImage.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
+mainImage.addEventListener("touchend", e => {
+  let endX = e.changedTouches[0].clientX;
+
+  if(endX - startX > 50){
+    document.getElementById("prevBtn").click();
+  } else if(startX - endX > 50){
+    document.getElementById("nextBtn").click();
+  }
+});
+
+/* =============================
+   START
+============================= */
+render();
+
+
+
+/* =================== WRAP =================== */
+
+
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+if(prevBtn && nextBtn){
+  prevBtn.onclick = () => {
+    currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+    render();
+  };
+
+  nextBtn.onclick = () => {
+    currentIndex = (currentIndex + 1) % gallery.length;
+    render();
+  };
+}
+
+
+</script>
+
+
+
+
+
+
+</body>
+</html>
