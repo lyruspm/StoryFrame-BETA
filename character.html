@@ -494,9 +494,7 @@
         ".view":            () => { localStorage.setItem("viewingCharacterId", char.id); location.href = "character-viewer.html"; },
         ".freeform-edit":   () => { localStorage.setItem("editingCharacterId", char.id); location.href = "freeform-editor.html"; },
         ".freeform-viewer": () => { localStorage.setItem("editingCharacterId", char.id); location.href = "freeform-viewer.html"; },
-        ".gallery": () => {
-  localStorage.setItem("viewingCharacterId", char.id);
-  location.href = "gallery-viewer.html";
+        ".gallery": () => { localStorage.setItem("viewingCharacterId", char.id); location.href = "gallery.html";
 },
       };
 
