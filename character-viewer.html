@@ -411,19 +411,25 @@ const gallerySection = document.getElementById("gallerySection");
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 
-/* GALLERY RENDER */
+/* LOAD GLOBAL GALLERY */
+const allImages = JSON.parse(localStorage.getItem("gallery")) || [];
 
-if(!char.gallery || char.gallery.length === 0){
+/* FILTER BY CHARACTER */
+const charImages = allImages.filter(img => img.characterId === char.id);
+
+/* RENDER */
+
+if(charImages.length === 0){
   gallerySection.style.display = "none";
 } else {
-  vGallery.innerHTML = char.gallery.map(src => `
+  vGallery.innerHTML = charImages.map(img => `
     <div class="gallery-item">
-      <img src="${src}">
+      <img src="${img.src}">
     </div>
   `).join("");
 }
 
-/* CLICK → LIGHTBOX */
+/* LIGHTBOX */
 
 vGallery.addEventListener("click", e => {
   const img = e.target.closest("img");
@@ -433,12 +439,9 @@ vGallery.addEventListener("click", e => {
   lightbox.classList.add("active");
 });
 
-/* CLOSE LIGHTBOX */
-
 lightbox.onclick = () => {
   lightbox.classList.remove("active");
 };
-
 
 
 </script>
