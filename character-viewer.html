@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Character Viewer</title>
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
 <style>
 body{
     margin:0;
     min-height:100vh;
-    font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-family:system-ui, sans-serif;
 
     background:
         radial-gradient(circle at 20% 20%, #1b2140, transparent 40%),
@@ -22,19 +20,14 @@ body{
     padding:30px;
 }
 
-
-/* ================= VIEWER CARD ================= */
+/* VIEWER */
 
 .viewer{
-    --viewer-bg:#1a1d26;
-    
-   display:flex;
-   flex-direction:column;
-   gap:18px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
 
     background:#1a1d26;
-    backdrop-filter: blur(22px) saturate(140%);
-
     border-radius:28px;
     padding:36px;
 
@@ -43,18 +36,9 @@ body{
     box-shadow:
         0 40px 80px rgba(0,0,0,.45),
         inset 0 1px 0 rgba(255,255,255,.04);
-
-    position:relative;
-    overflow:hidden;
-
-    transition:
-        background .35s ease,
-        color .25s ease,
-        box-shadow .25s ease;
 }
 
-
-/* ================= HERO ================= */
+/* HERO */
 
 .hero{
     display:flex;
@@ -68,16 +52,11 @@ body{
     height:170px;
     border-radius:50%;
     object-fit:cover;
-
-    box-shadow:
-        0 0 0 5px rgba(255,255,255,.05),
-        0 20px 50px rgba(0,0,0,.6);
 }
 
 .name{
     font-size:36px;
     font-weight:900;
-    letter-spacing:.4px;
 }
 
 .tags{
@@ -86,18 +65,14 @@ body{
     opacity:.7;
 }
 
-
-/* ================= SECTIONS ================= */
+/* SECTIONS */
 
 .section{
-    margin-top:24px;
     padding:20px;
     border-radius:18px;
 
     background:rgba(255,255,255,.03);
     border:1px solid rgba(255,255,255,.06);
-
-    backdrop-filter: blur(10px);
 }
 
 .section-title{
@@ -108,315 +83,145 @@ body{
     margin-bottom:10px;
 }
 
-.section-content{
+.big-text{
     font-size:15px;
-    line-height:1.65;
+    line-height:1.7;
+    white-space:pre-wrap;
 }
 
-
-/* ================= PILLS FIXED ================= */
-
-.relationship-chip{
-    display:inline-flex;
-    align-items:center;
-
-    padding:7px 14px;
-    margin:4px;
-
-    border-radius:999px;
-
-    font-size:13px;
-    font-weight:600;
-
-    background:
-        linear-gradient(180deg,
-            rgba(255,255,255,.12),
-            rgba(255,255,255,.03)
-        );
-
-    border:1px solid rgba(255,255,255,.15);
-
-    backdrop-filter: blur(8px);
-
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.25),
-        0 6px 16px rgba(0,0,0,.35);
-
-    transition:.2s;
-}
-
-.relationship-chip:hover{
-    transform:translateY(-1px);
-}
-
-
-/* ================= BUTTON ================= */
-
-.downloadBtn{
-    margin-top:30px;
-    width:100%;
-    padding:16px;
-
-    border:none;
-    border-radius:16px;
-
-    background:linear-gradient(135deg,#5aa2ff,#7ab6ff);
-
-    color:white;
-    font-size:16px;
-    font-weight:700;
-
-    cursor:pointer;
-
-    box-shadow:0 14px 40px rgba(90,162,255,.35);
-    transition:.2s;
-}
-
-.downloadBtn:hover{
-    transform:translateY(-2px);
-}
-
-/* ================= TOOL PANEL ================= */
-
-.bgPanel{
-    max-width:780px;
-    margin:0 auto 26px auto;
-
-    padding:24px 26px;
-
-    border-radius:22px;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,.06),
-            rgba(255,255,255,.02)
-        );
-
-    backdrop-filter: blur(18px) saturate(140%);
-
-    border:1px solid rgba(255,255,255,.08);
-
-    box-shadow:
-        0 25px 60px rgba(0,0,0,.35),
-        inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-/* Panel Titles */
-.bgPanel h3{
-    margin:0 0 16px 0;
-    font-size:14px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    opacity:.65;
-}
-
-
-/* ================= ROW LAYOUT ================= */
-
-.bgRow{
-    display:grid;
-    grid-template-columns: 80px 48px 1fr;
-    gap:12px;
-    align-items:center;
-    margin-bottom:14px;
-}
-
-.bgRow label{
-    font-size:14px;
-    opacity:.8;
-}
-
-
-/* ================= INPUT STYLING ================= */
-
-.bgPanel input[type="text"]{
-    height:40px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,.08);
-
-    background:rgba(0,0,0,.25);
-    color:white;
-
-    padding:0 12px;
-
-    outline:none;
-
-    transition:.2s;
-}
-
-.bgPanel input[type="text"]:focus{
-    border-color:rgba(120,180,255,.6);
-    box-shadow:0 0 0 2px rgba(120,180,255,.15);
-}
-
-
-/* COLOR PICKER WRAP */
-.bgPanel input[type="color"]{
-    width:48px;
-    height:40px;
-    padding:2px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(0,0,0,.3);
-    cursor:pointer;
-}
-
-
-/* ================= RANGE SLIDER ================= */
-
-.bgPanel input[type="range"]{
-    appearance:none;
-    height:6px;
-    border-radius:999px;
-    background:rgba(255,255,255,.15);
-}
-
-.bgPanel input[type="range"]::-webkit-slider-thumb{
-    appearance:none;
-    width:18px;
-    height:18px;
-    border-radius:50%;
-
-    background:linear-gradient(135deg,#5aa2ff,#7ab6ff);
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,.4);
-}
-
-#angleLabel{
-    font-size:13px;
-    opacity:.7;
-}
-
-/* STAT ROW SYSTEM */
+/* STAT ROW */
 
 .stat-row{
     display:flex;
     justify-content:space-between;
-    align-items:center;
     padding:10px 14px;
     margin-bottom:8px;
 
     border-radius:12px;
-
     background:rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.06);
-
-    backdrop-filter: blur(6px);
 }
 
 .stat-label{
     font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    color:rgba(255,255,255,0.6);
+    opacity:.6;
 }
 
 .stat-value{
     font-weight:600;
-    font-size:14px;
-    color:inherit;
 }
 
+/* RELATIONSHIP CHIP */
 
+.relationship-chip{
+    display:inline-block;
+    padding:6px 12px;
+    margin:4px;
+    border-radius:999px;
+    background:rgba(255,255,255,.08);
+}
+
+/* FORMS TABLE */
+
+.form-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+
+.form-table th{
+  text-align:left;
+  opacity:.6;
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.form-table td{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.form-table tr:hover{
+  background:rgba(255,255,255,.03);
+}
+
+/* BACKGROUND PANEL */
+
+.bgPanel{
+    max-width:780px;
+    margin:0 auto 20px;
+    padding:20px;
+    border-radius:18px;
+    background:rgba(255,255,255,.05);
+}
+
+.bgRow{
+    display:grid;
+    grid-template-columns:80px 1fr;
+    gap:10px;
+    margin-bottom:10px;
+}
 
 </style>
 </head>
 
 <body>
-    
-    <!-- BODY -->
-    
-    
-<div style="max-width:780px;margin:auto;margin-bottom:20px;">
 
-    <label>Background Color</label>
-
-    <div style="display:flex; gap:10px; margin-top:6px;">
-        <input type="color" id="bgColorPicker" value="#1a1d26">
-
-        <input type="text"
-               id="bgHexInput"
-               placeholder="#1a1d26"
-               style="flex:1;">
-    </div>
-
-</div>
+<!-- BACKGROUND CONTROLS -->
 
 <div class="bgPanel">
+  <div class="bgRow">
+    <label>Color A</label>
+    <input type="color" id="gradA" value="#1a1d26">
+  </div>
 
-    <h3>Background Builder</h3>
-
-    <div class="bgRow">
-        <label>Color A</label>
-        <input type="color" id="gradA" value="#1a1d26">
-        <input type="text" id="gradAHex" placeholder="#1a1d26">
-    </div>
-
-    <div class="bgRow">
-        <label>Color B</label>
-        <input type="color" id="gradB" value="#5aa2ff">
-        <input type="text" id="gradBHex" placeholder="#5aa2ff">
-    </div>
-
-    <div class="bgRow">
-        <label>Angle</label>
-        <input type="range" id="gradAngle" min="0" max="360" value="135">
-        <span id="angleLabel">135°</span>
-    </div>
-
+  <div class="bgRow">
+    <label>Color B</label>
+    <input type="color" id="gradB" value="#5aa2ff">
+  </div>
 </div>
+
+<!-- VIEWER -->
 
 <div class="viewer" id="viewerCard">
 
-    <div class="hero">
-        <img id="vImage">
-
-        <div class="hero-text">
-            <div class="name" id="vName"></div>
-            <div class="tags" id="vTags"></div>
-        </div>
+  <div class="hero">
+    <img id="vImage">
+    <div>
+      <div class="name" id="vName"></div>
+      <div class="tags" id="vTags"></div>
     </div>
+  </div>
 
-    <div class="section">
-        <div class="section-title">Description</div>
-        <div class="section-content" id="vDesc"></div>
-    </div>
+  <div class="section">
+    <div class="section-title">Description</div>
+    <div class="big-text" id="vDesc"></div>
+  </div>
 
-    <div class="section">
-        <div class="section-title">Lore</div>
-        <div class="section-content" id="vLore"></div>
-    </div>
+  <div class="section" id="formsSection">
+    <div class="section-title">Forms</div>
+    <div id="vForms"></div>
+  </div>
 
-    <div class="section">
-        <div class="section-title">Life Data</div>
-        <div class="section-content" id="vLife"></div>
-    </div>
+  <div class="section">
+    <div class="section-title">Details</div>
+    <div id="vDetails"></div>
+  </div>
 
-    <div class="section">
-        <div class="section-title">Relationships</div>
-        <div class="section-content" id="vRelationships"></div>
-    </div>
-    <div class="section" id="abilitiesSection">
+  <div class="section">
+    <div class="section-title">Relationships</div>
+    <div id="vRelationships"></div>
+  </div>
+
+  <div class="section" id="abilitiesSection">
     <div class="section-title">Abilities</div>
-    <div class="section-content" id="vAbilities"></div>
-</div>
-
-    
+    <div id="vAbilities"></div>
+  </div>
 
 </div>
-
-<button id="downloadBtn" class="downloadBtn">
-Download Character PNG
-</button>
-
-
-<!-- JAVASCRIPT -->
 
 <script>
 
-/* LOAD CHARACTER */
+/* LOAD */
 
 const chars = JSON.parse(localStorage.getItem("characters")) || [];
 const viewingId = localStorage.getItem("viewingCharacterId");
@@ -424,220 +229,119 @@ const viewingId = localStorage.getItem("viewingCharacterId");
 const char = chars.find(c => c.id === viewingId);
 
 if(!char){
-    alert("Character not found");
-    location.href = "character.html";
+  alert("Character not found");
+  location.href = "character.html";
 }
 
 /* ELEMENTS */
 
 const viewer = document.getElementById("viewerCard");
-const downloadBtn = document.getElementById("downloadBtn");
 
 const vImage = document.getElementById("vImage");
 const vName = document.getElementById("vName");
 const vTags = document.getElementById("vTags");
 const vDesc = document.getElementById("vDesc");
-const vLore = document.getElementById("vLore");
-const vLife = document.getElementById("vLife");
+const vForms = document.getElementById("vForms");
+const vDetails = document.getElementById("vDetails");
 const vRelationships = document.getElementById("vRelationships");
-
-/* BG Controls */
-
-const picker = document.getElementById("bgColorPicker");
-const hexInput = document.getElementById("bgHexInput");
-
-const gradA = document.getElementById("gradA");
-const gradB = document.getElementById("gradB");
-const gradAHex = document.getElementById("gradAHex");
-const gradBHex = document.getElementById("gradBHex");
-const gradAngle = document.getElementById("gradAngle");
-const angleLabel = document.getElementById("angleLabel");
-
-const abilitiesSection = document.getElementById("abilitiesSection");
 const vAbilities = document.getElementById("vAbilities");
+const abilitiesSection = document.getElementById("abilitiesSection");
 
-
-/* CHARACTER LOAD */
+/* BASIC */
 
 vImage.src = char.image || "";
 vName.textContent = char.name || "Unnamed";
 vTags.textContent = char.tags || "-";
 vDesc.textContent = char.desc || "-";
 
-/* HELPERS */
+/* DETAILS */
 
 function statRow(label,value){
-    return `
-    <div class="stat-row">
-        <span class="stat-label">${label}</span>
-        <span class="stat-value">${value || "-"}</span>
-    </div>`;
+  return `
+  <div class="stat-row">
+    <span class="stat-label">${label}</span>
+    <span class="stat-value">${value || "-"}</span>
+  </div>`;
 }
+
+vDetails.innerHTML =
+  statRow("Species", char.species) +
+  statRow("Origin", char.origin) +
+  statRow("Faction", char.faction) +
+  statRow("Alignment", char.alignment) +
+  statRow("Status", char.status) +
+  statRow("Age", char.age);
+
+/* FORMS */
+
+if(!char.forms || char.forms.length === 0){
+  document.getElementById("formsSection").style.display = "none";
+} else {
+  vForms.innerHTML = `
+    <table class="form-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${char.forms.map(f => `
+          <tr>
+            <td>${f.name || "-"}</td>
+            <td>${f.type || "-"}</td>
+            <td>${f.notes || "-"}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+/* RELATIONSHIPS */
 
 function chip(text){
-    return `<span class="relationship-chip">${text}</span>`;
+  return `<span class="relationship-chip">${text}</span>`;
 }
 
-/* DATA RENDER */
-
-vLore.innerHTML =
-    statRow("Species", char.species) +
-    statRow("Faction", char.faction) +
-    statRow("Origin", char.origin) +
-    statRow("Alignment", char.alignment);
-
-vLife.innerHTML =
-    statRow("Birth", char.birthDate) +
-    statRow("Death", char.deathDate || "Alive") +
-    statRow("Status", char.status) +
-    statRow("Age", char.age);
-
 vRelationships.innerHTML =
-    (char.relationships || [])
-    .map(r => chip(`${r.name} — ${r.type}`))
-    .join("") || "None";
-
+  (char.relationships || [])
+  .map(r => chip(`${r.name} — ${r.type}`))
+  .join("") || "None";
 
 /* ABILITIES */
 
 if(!char.abilities || char.abilities.length === 0){
-    abilitiesSection.style.display = "none";
+  abilitiesSection.style.display = "none";
 } else {
-    vAbilities.innerHTML = char.abilities.map(a => `
-        <div class="stat-row">
-            <div>
-                <div style="font-weight:600">${a.name || "Unnamed Ability"}</div>
-                <div style="font-size:12px;opacity:.6">
-                    ${a.type || "Unknown Type"} • 
-                  
-                </div>
-            </div>
-        </div>
-        <div style="margin-bottom:14px; opacity:.8;">
-            ${a.description || ""}
-        </div>
-    `).join("");
+  vAbilities.innerHTML = char.abilities.map(a => `
+    <div class="stat-row">
+      <div>
+        <div style="font-weight:600">${a.name}</div>
+        <div style="font-size:12px;opacity:.6">${a.type || ""}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      ${a.description || ""}
+    </div>
+  `).join("");
 }
 
+/* BACKGROUND */
 
-/* COLOR UTILS */
-
-function hexToRgb(hex){
-    hex = hex.replace("#","");
-    const num = parseInt(hex,16);
-    return {
-        r:(num>>16)&255,
-        g:(num>>8)&255,
-        b:num&255
-    };
-}
-
-
-function getBrightness({r,g,b}){
-    return (r*299 + g*587 + b*114)/1000;
-}
-
-function autoText(hex){
-    const rgb = hexToRgb(hex);
-    viewer.style.color =
-        getBrightness(rgb) > 150 ? "#111" : "#fff";
-}
-
-/* BACKGROUND ENGINE */
-
-function applySolid(hex){
-    viewer.style.background = hex;
-    autoText(hex);
-}
+const gradA = document.getElementById("gradA");
+const gradB = document.getElementById("gradB");
 
 function applyGradient(){
-    const a = gradA.value;
-    const b = gradB.value;
-    const angle = gradAngle.value;
-
-    viewer.style.background =
-        `linear-gradient(${angle}deg, ${a}, ${b})`;
-
-    const rgbA = hexToRgb(a);
-    const rgbB = hexToRgb(b);
-
-    const avg = {
-        r:(rgbA.r+rgbB.r)/2,
-        g:(rgbA.g+rgbB.g)/2,
-        b:(rgbA.b+rgbB.b)/2
-    };
-
-    viewer.style.color =
-        getBrightness(avg) > 150 ? "#111" : "#fff";
+  viewer.style.background =
+    `linear-gradient(135deg, ${gradA.value}, ${gradB.value})`;
 }
 
-/* BACKGROUND LISTENERS */
+gradA.oninput = applyGradient;
+gradB.oninput = applyGradient;
 
-picker.oninput = ()=>{
-    hexInput.value = picker.value;
-    applySolid(picker.value);
-};
-
-hexInput.oninput = ()=>{
-    let val = hexInput.value.trim();
-    if(!val.startsWith("#")) val="#"+val;
-
-    if(/^#[0-9A-F]{6}$/i.test(val)){
-        picker.value = val;
-        applySolid(val);
-    }
-};
-
-gradA.oninput = ()=>{
-    gradAHex.value = gradA.value;
-    applyGradient();
-};
-
-gradB.oninput = ()=>{
-    gradBHex.value = gradB.value;
-    applyGradient();
-};
-
-gradAngle.oninput = ()=>{
-    angleLabel.textContent = gradAngle.value + "°";
-    applyGradient();
-};
-
-gradAHex.oninput = ()=>{
-    let val = gradAHex.value.trim();
-    if(!val.startsWith("#")) val="#"+val;
-
-    if(/^#[0-9A-F]{6}$/i.test(val)){
-        gradA.value = val;
-        applyGradient();
-    }
-};
-
-gradBHex.oninput = ()=>{
-    let val = gradBHex.value.trim();
-    if(!val.startsWith("#")) val="#"+val;
-
-    if(/^#[0-9A-F]{6}$/i.test(val)){
-        gradB.value = val;
-        applyGradient();
-    }
-};
-
-/* EXPORT */
-
-downloadBtn.onclick = async ()=>{
-
-    const canvas = await html2canvas(viewer,{
-        scale:2,
-        backgroundColor:null,
-        useCORS:true
-    });
-
-    const link = document.createElement("a");
-    link.download = (char.name || "character") + ".png";
-    link.href = canvas.toDataURL();
-    link.click();
-};
+applyGradient();
 
 </script>
 
